@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Calculadora de Divisas{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <div class="card bg-secondary p-4 shadow-lg border-0">
+
+                <h2 class="text-center mb-4 text-warning">
+                    Calculadora <small class="text-white">Divisas</small>
+                </h2>
+
+                <!-- TASAS -->
+                <div class="row text-center mb-4 small">
+                    <div class="col">
+                        <p class="mb-0 text-info">BCV USD</p>
+                        <strong>{{ tasas.bcv_usd }}</strong>
+                    </div>
+                    <div class="col border-start border-end">
+                        <p class="mb-0 text-info">BCV EUR</p>
+                        <strong>{{ tasas.bcv_eur }}</strong>
+                    </div>
+                    <div class="col">
+                        <p class="mb-0 text-warning">Binance P2P</p>
+                        <strong>{{ tasas.p2p_ves }}</strong>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- SELECT -->
+                <div class="mb-3">
+                    <label class="form-label">Seleccionar Tasa de Referencia</label>
+                    <select id="tipoTasa" class="form-select bg-dark text-white border-info" onchange="convertir()">
+                        <option value="{{ tasas.bcv_usd }}">BCV Dólar ({{ tasas.bcv_usd }})</option>
+                        <option value="{{ tasas.bcv_eur }}">BCV Euro ({{ tasas.bcv_eur }})</option>
+                        <option value="{{ tasas.p2p_ves }}">Binance P2P ({{ tasas.p2p_ves }})</option>
+                    </select>
+                </div>
+
+                <!-- INPUT -->
+                <div class="mb-3">
+                    <label class="form-label">Monto en Divisa Extranjera</label>
+                    <input type="number" id="monto_ext" class="form-control" placeholder="Ej: 100.00" oninput="convertir()">
+                </div>
+
+                <!-- RESULTADO -->
+                <div class="mb-3">
+                    <label class="form-label">Total en Bolívares (VES)</label>
+                    <input type="text" id="resultado_ves" class="form-control fw-bold bg-light" readonly>
+                </div>
+
+                <button class="btn btn-warning fw-bold w-100" onclick="agregarCalculo()">
+                    Agregar a la Lista
+                </button>
+
+            </div>
+
+            <!-- TABLA -->
+            <div class="mt-4">
+                <h5 class="text-info border-bottom pb-2">Resultados Acumulados</h5>
+
+                <div class="table-responsive">
+                    <table class="table table-dark table-striped mt-2 small">
+                        <thead>
+                            <tr>
+                                <th>Monto</th>
+                                <th>Tasa</th>
+                                <th>Total Bs.</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="lista_calculos"></tbody>
+                    </table>
+                </div>
+
+                <button class="btn btn-sm btn-outline-danger w-100" onclick="limpiarLista()">
+                    Limpiar Todo
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/convertir.js') }}"></script>
+<script src="{{ url_for('static', filename='js/calculadora.js') }}"></script>
+{% endblock %}
