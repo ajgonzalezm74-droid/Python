@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Tendencia por Rango</h2>
+
+    <form method="POST" class="row g-3">
+
+        <div class="col-md-3">
+            <select name="tipo" class="form-select" required>
+                {% for tipo in tipos %}
+                    <option value="{{ tipo }}">
+                        {{ tipo.replace('_', ' ').upper() }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <input type="date" name="fecha_inicio" class="form-control" required>
+        </div>
+
+        <div class="col-md-3">
+            <input type="date" name="fecha_fin" class="form-control" required>
+        </div>
+
+        <div class="col-md-3">
+            <button class="btn btn-primary w-100">Calcular</button>
+        </div>
+
+    </form>
+    
+    <!-- RESULTADO -->
+
+    {% if resultado %}
+<div class="card mt-4 p-3 shadow">
+
+    <h5 class="mb-3">
+        Tendencia {{ tipo.replace('_',' ').upper() }}
+    </h5>
+
+    <p>
+        <strong>Desde:</strong> {{ fecha_inicio }}
+        <br>
+        <strong>Hasta:</strong> {{ fecha_fin }}
+    </p>
+
+    <hr>
+
+    <p><strong>Valor Inicial:</strong> {{ resultado.valor_inicial }}</p>
+    <p><strong>Valor Final:</strong> {{ resultado.valor_final }}</p>
+
+    <p><strong>Variación:</strong>
+        {% if resultado.variacion > 0 %}
+            <span class="text-success">▲ {{ resultado.variacion }}%</span>
+        {% elif resultado.variacion < 0 %}
+            <span class="text-danger">▼ {{ resultado.variacion }}%</span>
+        {% else %}
+            <span class="text-warning">0%</span>
+        {% endif %}
+    </p>
+
+</div>
+{% endif %}
+</div>
+
+{% endblock %}

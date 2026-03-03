@@ -71,3 +71,27 @@ body {
     text-align: center;
     color: #94a3b8;
 }
+
+.tasa-up {
+    color: #00ff88 !important;
+    transition: color 0.4s ease;
+}
+
+.tasa-down {
+    color: #ff4d4d !important;
+    transition: color 0.4s ease;
+}
+
+.tasa-neutral {
+    color: #cccccc !important;
+}
+
+.flash {
+    animation: flashEffect 0.6s ease;
+}
+
+@keyframes flashEffect {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}

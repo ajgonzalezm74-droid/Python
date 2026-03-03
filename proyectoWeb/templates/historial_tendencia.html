@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Historial + Tendencia</h2>
+
+    <form method="POST" class="row g-3 mb-4">
+
+         <div class="col-md-3">
+            <select name="tipo" class="form-select" required>
+                {% for tipo in tipos %}
+                    <option value="{{ tipo }}">{{ tipo }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+
+        <div class="col-md-3">
+            <input type="date" name="fecha_inicio" class="form-control" required>
+        </div>
+
+        <div class="col-md-3">
+            <input type="date" name="fecha_fin" class="form-control" required>
+        </div>
+
+        <div class="col-md-3">
+            <button class="btn btn-warning w-100">Analizar</button>
+        </div>
+
+    </form>
+
+  
+    <div class="alert alert-info">
+        Variación: <strong>{{ resultado.variacion }} %</strong>
+    </div>
+    
+
+    {% if datos %}
+        <table class="table table-hover table-bordered shadow">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in datos %}
+                <tr>
+                    <td>{{ item.fecha.strftime("%d-%m-%Y %H:%M") }}</td>
+                    <td>{{ item.valor }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+</div>
+
+{% endblock %}

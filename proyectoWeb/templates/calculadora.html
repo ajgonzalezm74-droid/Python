@@ -18,20 +18,24 @@
                 <div class="row text-center mb-4 small">
                     <div class="col">
                         <p class="mb-0 text-info">BCV USD</p>
-                        <strong>{{ tasas.bcv_usd }}</strong>
+                        <strong id="bcv_usd">{{ tasas.bcv_usd }}</strong>
                     </div>
                     <div class="col border-start border-end">
                         <p class="mb-0 text-info">BCV EUR</p>
-                        <strong>{{ tasas.bcv_eur }}</strong>
+                        <strong id="bcv_eur">{{ tasas.bcv_eur }}</strong>
                     </div>
                     <div class="col">
                         <p class="mb-0 text-warning">Binance P2P</p>
-                        <strong>{{ tasas.p2p_ves }}</strong>
+                        <strong><span id="p2p_arrow"></span>
+                            <span id="binance_usdt_ves">{{tasas.p2p_ves }}</span>
+                        </strong>
                     </div>
                 </div>
 
                 <hr>
-
+<p class="text-center small text-muted" id="ultima_actualizacion">
+    Última actualización: ahora
+</p>
                 <!-- SELECT -->
                 <div class="mb-3">
                     <label class="form-label">Seleccionar Tasa de Referencia</label>
@@ -92,4 +96,5 @@
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/convertir.js') }}"></script>
 <script src="{{ url_for('static', filename='js/calculadora.js') }}"></script>
+<script src="{{ url_for('static', filename='js/actualizar_tasas.js') }}"></script>
 {% endblock %}

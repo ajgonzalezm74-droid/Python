@@ -1,41 +1,22 @@
-from flask import Flask, render_template
-from flask import Flask, jsonify
-from providers import ExchangeProvider # Importamos tu nueva clase
+from flask import Flask
+from extensions import db
+from routes.api import api
+from routes.views import views
+import os
+
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
-provider = ExchangeProvider()  # instancia del proveedor
 
+db_path = os.path.join(basedir, "instance", "tasas.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+db.init_app(app)
 
+# Registrar blueprints
+app.register_blueprint(api)
+app.register_blueprint(views)
 
-@app.route('/')
-def home():
-    return render_template('index.html')
-
-@app.route('/acerca')
-def acerca():
-    return render_template('acerca.html')
-
-@app.route('/contacto')
-def contacto():
-    return render_template('contacto.html')
-
-@app.route('/calculadora')
-def calculadora():
-    try:
-        # 1. Llamamos a los métodos a través de la instancia 'provider'
-        # provider.get_all_rates() ya consolida todo y maneja la cache
-        tasas_raw = provider.get_all_rates() 
-
-        # 2. Preparamos el diccionario exactamente como lo espera tu HTML
-        # Asegúrate de usar los nombres que definiste en el método get_all_rates()
-        return render_template('calculadora.html', tasas=tasas_raw)
-        
-    except Exception as e:
-        print(f"Error en la ruta calculadora: {e}")
-        # Retornamos valores en 0 para que la página no "explote" si algo falla
-        tasas_error = {"bcv_usd": 0.0, "bcv_eur": 0.0, "p2p_ves": 0.0}
-        return render_template('calculadora.html', tasas=tasas_error)
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
