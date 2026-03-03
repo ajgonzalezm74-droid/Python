@@ -1,5 +1,5 @@
 flask
-flask-sqlalchemy
+flask-SQLAlchemy
 gunicorn
 requests
 beautifulsoup4
