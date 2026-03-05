@@ -30,6 +30,7 @@ def acerca():
 def calculadora():
 
     tasas = actualizar_todo() # Se asegura de tener lo último al calcular
+    
     return render_template("calculadora.html", tasas=tasas)
 # -------------------------
 # TENDENCIA
@@ -131,5 +132,8 @@ def historial_tendencia():
 
 @views.route("/contacto")
 def contacto():
+    
+    tasas = actualizar_todo() # Se asegura de tener lo último al calcular
+    
     return render_template("contacto.html")
 
