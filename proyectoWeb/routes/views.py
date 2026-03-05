@@ -1,10 +1,11 @@
 from flask import Blueprint, render_template,request
 from exchange_provider import ExchangeProvider
-from services.tasas_service import guardar_si_cambia
+from services.tasas_service import guardar_si_cambia, actualizar_todo
 from services.analisis_service import calcular_variacion_rango, obtener_historial_por_rango
 from models import HistorialTasa
 from extensions import db
 from sqlalchemy import distinct
+
 
 
 
@@ -14,6 +15,8 @@ views = Blueprint("views", __name__)
 
 @views.route("/")
 def inicio():
+         # Esto hace que se ejecute al abrir la página del proyecto
+    actualizar_todo()  # <--- Esto dispara la lógica al abrir la web
     return render_template("index.html")
 
 @views.route("/acerca")
@@ -26,14 +29,7 @@ def acerca():
 @views.route("/calculadora")
 def calculadora():
 
-    provider = ExchangeProvider()
-    tasas = provider.get_all_rates()
-    
-    
-    guardar_si_cambia("bcv_usd", tasas["bcv_usd"])
-    guardar_si_cambia("bcv_eur", tasas["bcv_eur"])
-    guardar_si_cambia("p2p_ves", tasas["p2p_ves"])
-    
+    tasas = actualizar_todo() # Se asegura de tener lo último al calcular
     return render_template("calculadora.html", tasas=tasas)
 # -------------------------
 # TENDENCIA

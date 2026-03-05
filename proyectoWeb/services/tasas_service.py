@@ -1,6 +1,7 @@
 from models import HistorialTasa
 from extensions import db
 from datetime import datetime
+from exchange_provider import ExchangeProvider # Agregamos el import aquí
 
 
 def guardar_si_cambia(tipo, valor):
@@ -34,3 +35,18 @@ def guardar_si_cambia(tipo, valor):
         print(f"Actualizado {tipo}: {valor}")
     else:
         print(f"Sin cambios {tipo}")
+        
+        # NUEVA FUNCIÓN MAESTRA
+def actualizar_todo():
+    """Obtiene y guarda todas las tasas de un solo golpe."""
+    try:
+        provider = ExchangeProvider()
+        tasas = provider.get_all_rates()
+        
+        guardar_si_cambia("bcv_usd", tasas["bcv_usd"])
+        guardar_si_cambia("bcv_eur", tasas["bcv_eur"])
+        guardar_si_cambia("p2p_ves", tasas["p2p_ves"])
+        return tasas
+    except Exception as e:
+        print(f"Error al actualizar tasas: {e}")
+        return None

@@ -30,12 +30,13 @@
 
                 <!-- Inicio -->
                 <li class="nav-item">
-                    <a class="nav-link" href="/">Inicio</a>
+                    <!-- <a class="nav-link" href="/">Inicio</a> -->
+                    <a class="nav-link" href="{{ url_for('views.inicio') }}">Inicio</a>
                 </li>
 
                 <!-- Acerca -->
                 <li class="nav-item">
-                    <a class="nav-link" href="/acerca">Acerca de Nosotros</a>
+                    <a class="nav-link" href="{{ url_for('views.acerca') }}">Acerca de Nosotros</a>
                 </li>
 
                 <!-- Submenú Consulta -->
@@ -62,12 +63,13 @@
 
                 <!-- Contacto -->
                 <li class="nav-item">
-                    <a class="nav-link" href="/contacto">Contacto</a>
+                    <a class="nav-link" href="{{ url_for('views.contacto') }}">Contacto</a>
+                    
                 </li>
 
                 <!-- Botón Calculadora -->
                 <li class="nav-item ms-lg-3">
-                    <a class="btn btn-warning fw-bold px-3" href="/calculadora">
+                    <a class="btn btn-warning fw-bold px-3" href="{{ url_for('views.calculadora') }}">
                         Calculadora
                     </a>
                 </li>
