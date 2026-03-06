@@ -1,8 +1,15 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from extensions import db
 from routes.api import api
 from routes.views import views
 import os
+from dotenv import load_dotenv
+
+
+# Carga las variables ANTES de configurar la app
+load_dotenv() 
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -20,8 +27,14 @@ app.register_blueprint(views)
 
 @app.route('/sw.js')
 def serve_sw():
-    return app.send_static_file('sw.js')
+    # return app.send_static_file('sw.js')
+    return send_from_directory(
+        os.path.join(app.root_path, 'static', 'js'),
+        'sw.js'
+    )
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
+    
+    
