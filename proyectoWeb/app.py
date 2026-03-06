@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 # Carga las variables ANTES de configurar la app
 load_dotenv() 
-
+#chatgpt
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 basedir = os.path.abspath(os.path.dirname(__file__))
