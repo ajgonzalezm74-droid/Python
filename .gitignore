@@ -1,6 +1,22 @@
+# Python
 .venv/
-__pycache__/*.pyc
+venv/
+env/
+
+__pycache__/
+
+# SQLite database (MUY importante para tu caso)
 instance/
+
+# Testing cache
 .pytest_cache/
+
+# Logs
 *.log
+
+# Environment variables
 .env
+
+# OS files
+.DS_Store
+Thumbs.db
