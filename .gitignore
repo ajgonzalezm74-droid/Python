@@ -6,7 +6,7 @@ env/
 __pycache__/
 
 # SQLite database (MUY importante para tu caso)
-#instance/
+instance/
 
 # Testing cache
 .pytest_cache/

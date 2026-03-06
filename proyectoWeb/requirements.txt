@@ -1,6 +1,5 @@
 flask
 Flask-SQLAlchemy
-gunicorn
 requests
 beautifulsoup4
 pandas
@@ -10,3 +9,5 @@ cachetools
 openai
 python-dotenv
 tenacity
+
+gunicorn
