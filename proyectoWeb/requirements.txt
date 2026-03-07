@@ -8,3 +8,4 @@ gunicorn==23.0.0
 setuptools==79.0.1
 beautifulsoup4==4.14.3
 bs4==0.0.2
+cachetools==5.3.0
