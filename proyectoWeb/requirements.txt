@@ -6,3 +6,4 @@ requests==2.32.5
 groq==1.0.0
 gunicorn==23.0.0
 setuptools==79.0.1
+beautifulsoup4==4.14.3
