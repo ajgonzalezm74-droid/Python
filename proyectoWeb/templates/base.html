@@ -52,30 +52,16 @@
                     </a>
 
                     <ul class="dropdown-menu dropdown-menu-dark">
-                        <li>
-                            <a class="dropdown-item" href="/tendencia">Tendencia</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="/historial">Historial</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="/historial-tendencia">
-                                Historial de Tendencia
-                            </a>
-                        </li>
+                        <li><a class="dropdown-item" href="{{ url_for('views.tendencia') }}">Tendencia</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('views.historial') }}">Historial</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('views.historial_tendencia') }}">Historial de Tendencia</a></li>
                     </ul>
                 </li>
-
+                    
                 <!-- Contacto -->
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('views.contacto') }}">Contacto</a>
-                    
-                </li><ul class="dropdown-menu dropdown-menu-dark">
-                    <li><a class="dropdown-item" href="{{ url_for('views.tendencia') }}">Tendencia</a></li>
-                    <li><a class="dropdown-item" href="{{ url_for('views.historial') }}">Historial</a></li>
-                    <li><a class="dropdown-item" href="{{ url_for('views.historial_tendencia') }}">Historial de Tendencia</a></li>
-                </ul>
-
+                    <a class="nav-link" href="{{ url_for('views.contacto') }}">Contacto</a>     
+                </li>
 
                 <!-- Botón Calculadora -->
                 <li class="nav-item ms-lg-3">
@@ -109,7 +95,7 @@
 
 <!-- 1. BOTÓN FLOTANTE (Fuera de la ventana) -->
 <button id="chat-bubble" onclick="toggleChat()" style="position: fixed; bottom: 20px; right: 20px; z-index: 4000; width: 60px; height: 60px; border-radius: 50%; border: none; background-color: #ffc107; font-size: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
-    🤖
+    🗨️ 
 </button>
 
 <!-- 2. VENTANA DE CHAT -->
@@ -144,8 +130,17 @@ function toggleChat() {
     }
 }
 
-document.getElementById('btn-enviar-chat').addEventListener('click', enviarPregunta);
-document.getElementById('user-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') enviarPregunta(); });
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.getElementById('btn-enviar-chat')
+        .addEventListener('click', enviarPregunta);
+
+    document.getElementById('user-input')
+        .addEventListener('keypress', (e) => { 
+            if(e.key === 'Enter') enviarPregunta(); 
+        });
+
+});
 
 async function enviarPregunta() {
     const input = document.getElementById('user-input');

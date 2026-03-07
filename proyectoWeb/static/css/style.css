@@ -95,3 +95,19 @@ body {
     50% { transform: scale(1.15); }
     100% { transform: scale(1); }
 }
+
+.chat-user{
+    background:#ffc107;
+    color:#000;
+    padding:8px;
+    border-radius:10px;
+    margin-bottom:6px;
+    text-align:right;
+}
+
+.chat-ia{
+    background:#444;
+    padding:8px;
+    border-radius:10px;
+    margin-bottom:6px;
+}
