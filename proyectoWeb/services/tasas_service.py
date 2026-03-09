@@ -42,11 +42,22 @@ def actualizar_todo():
     try:
         provider = ExchangeProvider()
         tasas = provider.get_all_rates()
-        
-        guardar_si_cambia("bcv_usd", tasas["bcv_usd"])
-        guardar_si_cambia("bcv_eur", tasas["bcv_eur"])
-        guardar_si_cambia("p2p_ves", tasas["p2p_ves"])
+
+        if tasas["bcv_usd"] > 0:
+            guardar_si_cambia("bcv_usd", tasas["bcv_usd"])
+        else:
+            print("BCV USD inválido, no se guarda")
+
+        if tasas["bcv_eur"] > 0:
+            guardar_si_cambia("bcv_eur", tasas["bcv_eur"])
+        else:
+            print("BCV EUR inválido, no se guarda")
+
+        if tasas["p2p_ves"] > 0:
+            guardar_si_cambia("p2p_ves", tasas["p2p_ves"])
+
         return tasas
+
     except Exception as e:
         print(f"Error al actualizar tasas: {e}")
         return None

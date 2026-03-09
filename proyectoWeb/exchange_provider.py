@@ -1,169 +1,106 @@
 import requests
 from bs4 import BeautifulSoup
 from cachetools import TTLCache
-from tenacity import retry, stop_after_attempt, wait_fixed
+from tenacity import retry, stop_after_attempt, wait_exponential
 import urllib3
+import random
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
 class ExchangeProvider:
-
     def __init__(self):
-
-        print("ExchangeProvider cargado")
-
-        self.headers = {
-            "User-Agent": "Mozilla/5.0"
-        }
-
-        # Cache profesional
-        self.cache_bcv = TTLCache(maxsize=1, ttl=36000)
-        self.cache_binance = TTLCache(maxsize=1, ttl=3600)
-
-        self.bcv_url = "https://www.bcv.org.ve/"
+        self.session = requests.Session()
+        # Cache: BCV (6h), Binance (10 min) para no ser baneado
+        self.cache = TTLCache(maxsize=20, ttl=21600) 
+        self.last_valid_rates = {"USD": 0.0, "EUR": 0.0}
+        
+        self.bcv_url = "https://bcv.org.ve"
         self.binance_url = "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search"
 
-    # =====================================================
-    # RETRY DECORATOR (MUY IMPORTANTE EN PRODUCCIÓN)
-    # =====================================================
+    def get_headers(self, is_binance=False):
+        ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+        headers = {
+            "User-Agent": ua,
+            "Accept": "application/json" if is_binance else "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "es-ES,es;q=0.9",
+        }
+        if is_binance:
+            headers.update({
+                "Origin": "https://p2p.binance.com",
+                "Referer": "https://binance.com",
+                "Content-Type": "application/json"
+            })
+        return headers
 
-    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
-    def safe_request(self, method, url, **kwargs):
-
-        response = requests.request(
-            method,
-            url,
-            timeout=10,
-            verify=False,
-            **kwargs
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=6))
+    def safe_request(self, method, url, is_binance=False, **kwargs):
+        # Timeouts largos son vitales para el BCV
+        response = self.session.request(
+            method, url, timeout=25, verify=False, 
+            headers=self.get_headers(is_binance), **kwargs
         )
-
-        if response.status_code != 200:
-            raise Exception(f"HTTP {response.status_code}")
-
+        response.raise_for_status()
         return response
 
-    # =====================================================
-    # BCV SCRAPER PROFESIONAL
-    # =====================================================
-
     def get_bcv_rates(self):
-
-        if "bcv" in self.cache_bcv:
-            return self.cache_bcv["bcv"]
-
-        rates = {"USD": 0.0, "EUR": 0.0}
+        if "bcv" in self.cache: return self.cache["bcv"]
 
         try:
-            response = self.safe_request(
-                "GET",
-                self.bcv_url,
-                headers=self.headers
-            )
+            # Plan A: Scraper Oficial
+            resp = self.safe_request("GET", self.bcv_url)
+            soup = BeautifulSoup(resp.text, "html.parser")
+            rates = {}
+            items = {"USD": "dolar", "EUR": "euro"}
 
-            soup = BeautifulSoup(response.text, "html.parser")
+            for code, element_id in items.items():
+                container = soup.find("div", {"id": element_id})
+                if container and container.find("strong"):
+                    # Limpieza profunda de strings (quita puntos de miles y cambia coma por punto)
+                    raw_val = container.find("strong").text.strip()
+                    clean_val = raw_val.replace(".", "").replace(",", ".")
+                    rates[code] = round(float(clean_val), 2)
 
-            mapping = {
-                "dolar": "USD",
-                "euro": "EUR"
-            }
-
-            for div_id, key in mapping.items():
-
-                block = soup.find("div", id=div_id)
-
-                if block:
-
-                    strong = block.find("strong")
-
-                    if strong:
-
-                        try:
-                            value = float(
-                                strong.text.strip()
-                                .replace(".", "")
-                                .replace(",", ".")
-                            )
-
-                            # 🔥 Protección anti dato corrupto
-                            if value > 0:
-                                rates[key] = round(value, 2)
-
-                        except ValueError:
-                            pass
-
-            self.cache_bcv["bcv"] = rates
-            return rates
+            if rates.get("USD"):
+                self.cache["bcv"] = rates
+                self.last_valid_rates.update(rates)
+                return rates
+            raise ValueError("HTML no parseable")
 
         except Exception as e:
-
-            print("Error BCV:", e)
-            return rates
-
-    # =====================================================
-    # BINANCE P2P PROFESIONAL
-    # =====================================================
+            print(f"⚠ BCV Principal falló: {e}. Intentando DolarApi...")
+            # Plan B: API Espejo (DolarApi)
+            try:
+                res = requests.get("https://dolarapi.com", timeout=10)
+                val = res.json().get("promedio")
+                fallback = {"USD": float(val), "EUR": 0.0}
+                self.cache["bcv"] = fallback
+                return fallback
+            except:
+                return self.last_valid_rates
 
     def get_binance_p2p(self):
-
-        if "binance" in self.cache_binance:
-            return self.cache_binance["binance"]
+        if "binance" in self.cache: return self.cache["binance"]
 
         payload = {
-            "asset": "USDT",
-            "fiat": "VES",
-            "merchantCheck": True,
-            "page": 1,
-            "rows": 1,
-            "tradeType": "BUY",
-            "publisherType": "merchant",
-            "payTypes": ["PagoMovil"]
+            "asset": "USDT", "fiat": "VES", "merchantCheck": False,
+            "page": 1, "rows": 3, "tradeType": "BUY",
+            "publisherType": None, "payTypes": ["PagoMovil"]
         }
 
         try:
-
-            response = self.safe_request(
-                "POST",
-                self.binance_url,
-                json=payload,
-                headers=self.headers
-            )
-
-            data = response.json()
-
-            price = 0.0
-
+            resp = self.safe_request("POST", self.binance_url, json=payload, is_binance=True)
+            data = resp.json()
             if data.get("data"):
-
-                price = float(
-                    data["data"][0]["adv"]["price"]
-                )
-
-            # Protección financiera
-            if price > 0:
-                price = round(price, 2)
-                self.cache_binance["binance"] = price
-                print("Precio Binance:", price)
-
-            return price
-
+                price = float(data["data"][0]["adv"]["price"])
+                self.cache["binance"] = price
+                return round(price, 2)
         except Exception as e:
-
-            print("Error Binance:", e)
-            return 0.0
-
-    # =====================================================
-    # CONSOLIDADO
-    # =====================================================
+            print(f"⚠ Binance falló: {e}")
+        return 0.0
 
     def get_all_rates(self):
-
-        bcv = self.get_bcv_rates()
-        binance = self.get_binance_p2p()
-
         return {
-            "bcv_usd": bcv.get("USD", 0.0),
-            "bcv_eur": bcv.get("EUR", 0.0),
-            "p2p_ves": binance
+            "bcv_usd": self.get_bcv_rates().get("USD", 0.0),
+            "bcv_eur": self.get_bcv_rates().get("EUR", 0.0),
+            "p2p_ves": self.get_binance_p2p()
         }

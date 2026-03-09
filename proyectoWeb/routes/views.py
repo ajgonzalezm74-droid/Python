@@ -28,9 +28,35 @@ def acerca():
 #-----------------  
 @views.route("/calculadora")
 def calculadora():
+    provider = ExchangeProvider()
+    # Dentro del route /calculadora
+    print("Actualizando tasas desde calculadora...")
+    print("Obteniendo tasas...")
+    print("BCV USD:", provider.get_bcv_rates().get("USD", "Error"))
+    print("BCV EUR:", provider.get_bcv_rates().get("EUR", "Error"))
+    print("P2P VES:", provider.get_binance_p2p())   
+    try:
+        binance = provider.get_binance_p2p()  # intento real
+        # 🔹 Protección total
+        if not binance or binance <= 0:
+            raise ValueError("Binance inválido")
+        guardar_si_cambia("p2p_ves", binance)
+    except Exception as e:
+        print("⚠ Error Binance:", e)
+        # 🔹 Fallback: última válida en BD
+        ultima = (
+            HistorialTasa.query
+            .filter_by(tipo="p2p_ves")
+            .order_by(HistorialTasa.fecha.desc())
+            .first()
+        )
+        binance = ultima.valor if ultima else 0.0  # 0 solo si nunca hay registro
 
-    tasas = actualizar_todo() # Se asegura de tener lo último al calcular
-    
+    tasas = {
+        "bcv_usd": HistorialTasa.query.filter_by(tipo="bcv_usd").order_by(HistorialTasa.fecha.desc()).first().valor,
+        "bcv_eur": HistorialTasa.query.filter_by(tipo="bcv_eur").order_by(HistorialTasa.fecha.desc()).first().valor,
+        "p2p_ves": binance
+    }
     return render_template("calculadora.html", tasas=tasas)
 # -------------------------
 # TENDENCIA
@@ -133,7 +159,7 @@ def historial_tendencia():
 @views.route("/contacto")
 def contacto():
     
-    tasas = actualizar_todo() # Se asegura de tener lo último al calcular
+    #tasas = actualizar_todo() # Se asegura de tener lo último al calcular
     
     return render_template("contacto.html")
 

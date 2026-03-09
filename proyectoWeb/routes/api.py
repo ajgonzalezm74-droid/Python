@@ -5,6 +5,7 @@ from services.analisis_service import calcular_variacion_rango
 from models import HistorialTasa  # Asegúrate de que la ruta sea correcta
 import re
 from datetime import datetime
+from services.tasas_service import actualizar_todo
 
 
 
