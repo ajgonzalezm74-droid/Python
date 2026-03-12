@@ -26,6 +26,7 @@ with app.app_context():
 
 # Importar blueprints DESPUÉS de crear app
 from routes.api import api
+
 from routes.views import views
 
 app.register_blueprint(api)
