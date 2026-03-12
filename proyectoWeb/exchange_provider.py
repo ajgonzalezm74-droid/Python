@@ -4,6 +4,7 @@ from cachetools import TTLCache
 from tenacity import retry, stop_after_attempt, wait_exponential
 import urllib3
 import random
+import re
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -78,29 +79,49 @@ class ExchangeProvider:
             except:
                 return self.last_valid_rates
 
+    def get_headers(self, is_binance=False):
+        ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+        headers = {
+            "User-Agent": ua,
+            "Accept": "application/json" if is_binance else "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "es-ES,es;q=0.9",
+        }
+        if is_binance:
+            headers.update({
+                "Origin": "https://binance.com",
+                "Referer": "https://binance.com",
+                "Content-Type": "application/json",
+                "clienttype": "web"  # <--- ESTO ES VITAL PARA QUE NO DE 0.0
+            })
+        return headers
+
     def get_binance_p2p(self):
         if "binance" in self.cache: return self.cache["binance"]
 
+        # Configuración para tasa real de venta (lo que recibes en Bs)
         payload = {
-            "asset": "USDT", "fiat": "VES", "merchantCheck": False,
-            "page": 1, "rows": 3, "tradeType": "BUY",
-            "publisherType": None, "payTypes": ["PagoMovil"]
+            "asset": "USDT", 
+            "fiat": "VES", 
+            "merchantCheck": True,
+            "page": 1, 
+            "rows": 5, 
+            "tradeType": "SELL", # SELL para ver a cuánto te compran tus USDT
+            "publisherType": "merchant", 
+            "payTypes": ["PagoMovil"] # Sin espacio
         }
 
         try:
             resp = self.safe_request("POST", self.binance_url, json=payload, is_binance=True)
             data = resp.json()
-            if data.get("data"):
+            
+            if data.get("data") and len(data["data"]) > 0:
+                # Extraemos el precio del primer anuncio verificado
                 price = float(data["data"][0]["adv"]["price"])
+                print(f"Binance P2P detectado: {price} VES")
                 self.cache["binance"] = price
                 return round(price, 2)
+            else:
+                print("⚠ Binance no retornó anuncios válidos.")
         except Exception as e:
             print(f"⚠ Binance falló: {e}")
         return 0.0
-
-    def get_all_rates(self):
-        return {
-            "bcv_usd": self.get_bcv_rates().get("USD", 0.0),
-            "bcv_eur": self.get_bcv_rates().get("EUR", 0.0),
-            "p2p_ves": self.get_binance_p2p()
-        }
