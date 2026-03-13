@@ -26,10 +26,10 @@ with app.app_context():
 
 # Importar blueprints DESPUÉS de crear app
 from routes.api import api
-
 from routes.views import views
 
-app.register_blueprint(api)
+# En app.py
+app.register_blueprint(api, url_prefix='/api')
 app.register_blueprint(views)
 
 # Service worker
