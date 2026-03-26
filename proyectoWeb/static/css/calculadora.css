@@ -1,0 +1,110 @@
+/* ====== CALCULADORA TECH STYLES ====== */
+
+.glass-card {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 245, 255, 0.15);
+    border-radius: 30px;
+    color: white;
+}
+
+.bg-black-20 { background: rgba(0,0,0,0.25); }
+
+.label-tech {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.7rem;
+    color: #00f5ff;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+    letter-spacing: 1px;
+}
+
+.input-tech {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    border-radius: 12px !important;
+    padding: 12px;
+}
+
+.input-tech:focus {
+    border-color: #00f5ff !important;
+    box-shadow: 0 0 15px rgba(0, 245, 255, 0.2) !important;
+}
+
+/* El área del resultado */
+.result-box {
+    background: linear-gradient(145deg, rgba(0, 245, 255, 0.05), rgba(37, 99, 235, 0.1));
+    border-radius: 20px;
+    padding: 15px;
+    text-align: center;
+    border: 1px dashed rgba(0, 245, 255, 0.3);
+}
+
+.result-input {
+    background: transparent;
+    border: none;
+    color: #00f5ff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+    font-weight: bold;
+    width: 100%;
+    text-align: center;
+    outline: none;
+    text-shadow: 0 0 15px rgba(0, 245, 255, 0.5);
+}
+
+.text-cyan-glow {
+    color: #00f5ff;
+    text-shadow: 0 0 10px rgba(0, 245, 255, 0.3);
+}
+
+.letter-spacing-2 { letter-spacing: 2px; }
+
+/* Tabla de historial limpia */
+#lista_calculos tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#lista_calculos td {
+    padding: 12px 8px;
+}
+/* Forzar visibilidad en el Select y sus opciones */
+.form-select.input-tech {
+    color: #ffffff !important;
+    background-color: rgba(30, 41, 59, 0.8) !important;
+}
+
+/* Estilo específico para las opciones (el menú que se despliega) */
+.form-select.input-tech option {
+    background-color: #1e293b !important; /* Azul oscuro sólido */
+    color: #ffffff !important;
+    padding: 10px;
+}
+
+/* Eliminar el resalte azul feo de Windows/Chrome al seleccionar */
+.form-select.input-tech:focus {
+    border-color: #00f5ff !important;
+    box-shadow: 0 0 15px rgba(0, 245, 255, 0.4) !important;
+}
+/* Botón Agregar con más contraste */
+.btn-tech-add {
+    background: linear-gradient(90deg, #00f5ff, #007bff) !important;
+    color: #050810 !important; /* Texto oscuro para máxima lectura */
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    letter-spacing: 2px;
+    border: none;
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 4px 15px rgba(0, 245, 255, 0.3);
+    transition: 0.3s;
+}
+
+.btn-tech-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(0, 245, 255, 0.6);
+    filter: brightness(1.1);
+}

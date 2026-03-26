@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block page_title %}Nueva Cobranza{% endblock %}
+
+{% block content %}
+<div class="table-container" style="max-width: 600px; margin: 0 auto;">
+    <h2>Nueva Cobranza</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label>Cliente</label>
+            <input type="text" name="cliente" required class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Monto</label>
+            <input type="number" name="monto" required class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Fecha</label>
+            <input type="date" name="fecha" required class="form-control">
+        </div>
+        <button type="submit" class="btn-primary">Guardar</button>
+        <a href="{{ url_for('cobranzas.listar') }}" class="btn-modal">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block page_title %}Gestión de Menús{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <div class="table-header">
+        <h2><i class="fas fa-bars"></i> Gestión de Menús</h2>
+        <button id="btnNuevo" class="btn-primary">
+            <i class="fas fa-plus"></i> Nuevo Menú
+        </button>
+    </div>
+    
+    <p style="margin-bottom: 1rem; color: var(--text-light);">
+        Módulo en desarrollo. Los menús se gestionan directamente desde la base de datos.
+    </p>
+    
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Icono</th>
+                <th>URL</th>
+                <th>Orden</th>
+                <th>Padre</th>
+                <th>Activo</th>
+            </thead>
+        <tbody>
+            {% for menu in menus %}
+            <tr>
+                <td>{{ menu.id }}</td>
+                <td><strong>{{ menu.nombre }}</strong></td>
+                <td><i class="{{ menu.icono }}"></i> {{ menu.icono }}</td>
+                <td><code>{{ menu.url or '---' }}</code></td>
+                <td>{{ menu.orden }}</td>
+                <td>{{ menu.padre.nombre if menu.padre else 'Raíz' }}</td>
+                <td>
+                    {% if menu.activo %}
+                    <span class="status-badge active">Activo</span>
+                    {% else %}
+                    <span class="status-badge inactive">Inactivo</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block page_title %}Gestión de Roles{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <div class="table-header">
+        <h2><i class="fas fa-shield-alt"></i> Roles del Sistema</h2>
+        <button id="btnNuevoRol" class="btn-primary">
+            <i class="fas fa-plus"></i> Nuevo Rol
+        </button>
+    </div>
+    
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Permisos</th>
+                <th>Usuarios</th>
+                <th>Acciones</th>
+            </thead>
+        <tbody>
+            {% for rol in roles %}
+            <tr>
+                <td>#{{ rol.id_rol }}</td>
+                <td>
+                    <strong>{{ rol.nombre }}</strong>
+                    {% if rol.nombre == 'superadmin' %}
+                        <span class="role-badge" style="background: gold; color: #000;">Sistema</span>
+                    {% endif %}
+                </td>
+                <td>{{ rol.descripcion }}</td>
+                <td>
+                    <span class="role-badge">{{ rol.permisos|length }} permisos</span>
+                    <button class="btn-icon" onclick="verPermisos({{ rol.id_rol }})" title="Ver permisos">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </td>
+                <td>
+                    <span class="role-badge">{{ rol.usuarios|length }} usuarios</span>
+                    <button class="btn-icon" onclick="verUsuarios({{ rol.id_rol }})" title="Ver usuarios">
+                        <i class="fas fa-users"></i>
+                    </button>
+                </td>
+                <td class="action-buttons">
+                    <button class="btn-icon" onclick="editarRol({{ rol.id_rol }})" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    {% if rol.nombre != 'superadmin' and rol.usuarios|length == 0 %}
+                    <button class="btn-icon delete" onclick="eliminarRol({{ rol.id_rol }})" title="Eliminar">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal para crear/editar rol -->
+<div id="rolModal" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-header">
+            <i class="fas fa-shield-alt"></i>
+            <h3 id="modalTitle">Nuevo Rol</h3>
+        </div>
+        <div class="modal-body">
+            <form id="rolForm">
+                <input type="hidden" id="rolId" name="id">
+                
+                <div class="form-group">
+                    <label>Nombre del Rol</label>
+                    <input type="text" id="rolNombre" name="nombre" required class="form-control" 
+                           placeholder="Ej: consultor, operador, cobranzas...">
+                </div>
+                
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="rolDescripcion" name="descripcion" rows="2" class="form-control"
+                              placeholder="Descripción del rol y sus funciones"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Permisos</label>
+                    <div id="permisosContainer" style="max-height: 400px; overflow-y: auto;">
+                        <!-- Los permisos se cargarán aquí con JavaScript -->
+                        <div class="loading">Cargando permisos...</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button onclick="cerrarModal()" class="btn-modal">Cancelar</button>
+            <button onclick="guardarRol()" class="btn-primary">Guardar Rol</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver permisos -->
+<div id="permisosModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <i class="fas fa-key"></i>
+            <h3>Permisos del Rol</h3>
+        </div>
+        <div class="modal-body">
+            <div id="listaPermisos"></div>
+        </div>
+        <div class="modal-footer">
+            <button onclick="cerrarPermisosModal()" class="btn-modal">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver usuarios -->
+<div id="usuariosModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <i class="fas fa-users"></i>
+            <h3>Usuarios con este Rol</h3>
+        </div>
+        <div class="modal-body">
+            <div id="listaUsuarios"></div>
+        </div>
+        <div class="modal-footer">
+            <button onclick="cerrarUsuariosModal()" class="btn-modal">Cerrar</button>
+        </div>
+    </div>
+</div>
+<script src= "/static/js/roles.js"></script>
+{% endblock %}

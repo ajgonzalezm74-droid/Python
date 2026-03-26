@@ -15,65 +15,62 @@
 
     <!-- Estilos propios -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/calculadora.css') }}">
+
+    {% block head %}
+    {% endblock %}
+
 </head>
 
 <body class="bg-dark text-white">
 
 <!-- NAVBAR GLOBAL -->
-<nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+ <!-- NAVBAR GLOBAL -->
+<nav class="navbar navbar-expand-lg navbar-dark custom-navbar fixed-top">
     <div class="container">
+        <!-- Logo -->
+        <a class="navbar-brand fw-bold" href="/">
+            <span class="brand-glow">AJG</span> Solution
+        </a>
 
-        <a class="navbar-brand fw-bold" href="/">AJG Solution</a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <!-- ESTO ES VITAL: El botón para abrir el menú en móvil -->
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
 
+        <!-- El contenido colapsable -->
         <div class="collapse navbar-collapse" id="navbarNav">
-
             <ul class="navbar-nav ms-auto align-items-lg-center">
-
-                <!-- Inicio -->
-                <li class="nav-item">
-                    <!-- <a class="nav-link" href="/">Inicio</a> -->
-                    <a class="nav-link" href="{{ url_for('views.inicio') }}">Inicio</a>
-                </li>
-
-                <!-- Acerca -->
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('views.acerca') }}">Acerca de Nosotros</a>
-                </li>
-
-                <!-- Submenú Consulta -->
+                
+                <!-- INICIO COMO PADRE ÚNICO -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="consultaDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        Consulta
+                    <a class="nav-link dropdown-toggle nav-link-glow fs-5" href="#" id="menuPrincipal" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="brand-glow">☰</span> INICIO
                     </a>
 
-                    <ul class="dropdown-menu dropdown-menu-dark">
-                        <li><a class="dropdown-item" href="{{ url_for('views.tendencia') }}">Tendencia</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('views.historial') }}">Historial</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('views.historial_tendencia') }}">Historial de Tendencia</a></li>
+                    <!-- SUBMENÚ CON TODOS LOS "HIJOS" -->
+                    <ul class="dropdown-menu dropdown-menu-dark glass-dropdown shadow-lg" aria-labelledby="menuPrincipal">
+                        <li><a class="dropdown-item py-2" href="{{ url_for('views.acerca') }}">👥 Nosotros</a></li>
+                        <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                        <li class="px-3 py-1 small text-cyan-glow fw-bold text-uppercase" style="font-size: 0.7rem;">Consulta</li>
+                        <li><a class="dropdown-item" href="{{ url_for('views.tendencia') }}">⚡ Tendencia</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('views.historial') }}">📊 Historial</a></li>
+                        <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                        <li><a class="dropdown-item py-2" href="{{ url_for('views.contacto') }}">📩 Contacto</a></li>
+                        <li class="mt-2 px-2">
+                            <a class="btn btn-neon-glow w-100 btn-sm fw-bold" href="{{ url_for('views.calculadora') }}">
+                                CALCULADORA
+                            </a>
+                        </li>
                     </ul>
                 </li>
-                    
-                <!-- Contacto -->
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('views.contacto') }}">Contacto</a>     
-                </li>
-
-                <!-- Botón Calculadora -->
-                <li class="nav-item ms-lg-3">
-                    <a class="btn btn-warning fw-bold px-3" href="{{ url_for('views.calculadora') }}">
-                        Calculadora
-                    </a>
-                </li>
-
             </ul>
         </div>
     </div>
 </nav>
+
+
+
 
 <!-- CONTENIDO DINÁMICO -->
 {% block content %}
@@ -94,12 +91,12 @@
 {% endblock %}
 
 <!-- 1. BOTÓN FLOTANTE (Fuera de la ventana) -->
-<button id="chat-bubble" onclick="toggleChat()" style="position: fixed; bottom: 20px; right: 20px; z-index: 4000; width: 60px; height: 60px; border-radius: 50%; border: none; background-color: #ffc107; font-size: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+<!--<button id="chat-bubble" onclick="toggleChat()" style="position: fixed; bottom: 20px; right: 20px; z-index: 4000; width: 60px; height: 60px; border-radius: 50%; border: none; background-color: #ffc107; font-size: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
     🗨️ 
-</button>
+</button>-->
 
 <!-- 2. VENTANA DE CHAT -->
-<div id="chat-window" class="card bg-dark text-white border-warning" 
+<!--<div id="chat-window" class="card bg-dark text-white border-warning" 
      style="display: none !important; position: fixed; bottom: 90px; right: 20px; width: 320px; height: 450px; z-index: 3000; flex-direction: column; border-radius: 15px; overflow: hidden;">
     
     <div class="card-header bg-warning text-dark fw-bold d-flex justify-content-between align-items-center">
@@ -117,9 +114,10 @@
             <button class="btn btn-warning" id="btn-enviar-chat">➤</button>
         </div>
     </div>
-</div>
+</div>-->
 
 <!-- 3. SCRIPT (Fuera de los DIVs) -->
+ <!-- El script se coloca al final para asegurar que el DOM esté cargado antes de asignar eventos -->
 <script>
 function toggleChat() {
     const chat = document.getElementById('chat-window');

@@ -1,113 +1,73 @@
-/* ====== GENERAL ====== */
+/* CORRECCIÓN DE FUENTES */
+@import url('https://googleapis.com');
 
 body {
-    background-color: #0f172a;
-    color: white;
-    font-family: 'Roboto', sans-serif;
+    background-color: #050810;
+    padding-top: 80px; /* Para que el contenido no quede debajo de la navbar */
 }
 
-/* ====== NAVBAR ====== */
-
+/* NAVBAR BASE */
 .custom-navbar {
-    background-color: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(10px);
+    background-color: rgba(15, 23, 42, 0.85) !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(0, 245, 255, 0.2);
 }
 
-/* ====== HERO ====== */
-
-.hero {
-    height: 100vh;
-    background: linear-gradient(135deg, #0f172a, #1e3a8a, #2563eb);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.hero h1 {
+.brand-glow {
+    color: #00f5ff;
+    text-shadow: 0 0 10px rgba(0, 245, 255, 0.7);
     font-family: 'Orbitron', sans-serif;
-    font-size: 3rem;
-    font-weight: bold;
 }
 
-/* ====== BOTÓN TECH ====== */
+#menuPrincipal {
+    font-family: 'Orbitron', sans-serif;
+    color: white !important;
+    letter-spacing: 2px;
+}
 
-.btn-tech {
-    background: linear-gradient(90deg, #00f5ff, #007bff);
-    border: none;
-    color: white;
-    padding: 12px 30px;
-    border-radius: 30px;
+/* HIJOS (DROPDOWN) */
+.glass-dropdown {
+    background: rgba(10, 15, 30, 0.95) !important;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 245, 255, 0.3) !important;
+    border-radius: 20px !important;
+    min-width: 220px;
+    padding: 15px 10px !important;
+}
+
+.glass-dropdown .dropdown-item {
+    color: rgba(255, 255, 255, 0.8) !important;
     transition: 0.3s;
 }
 
-.btn-tech:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px #00f5ff;
+.glass-dropdown .dropdown-item:hover {
+    background: rgba(0, 245, 255, 0.1) !important;
+    color: #00f5ff !important;
+    transform: translateX(8px);
 }
 
-/* ====== SERVICIOS ====== */
-
-.services {
-    background-color: #0f172a;
-}
-
-.tech-card {
-    background-color: #1e293b;
+/* BOTÓN CALCULADORA DENTRO DEL MENÚ */
+.btn-neon-glow {
+    background: #ffc107 !important;
+    color: black !important;
+    border-radius: 10px;
     border: none;
-    border-radius: 15px;
-    transition: 0.3s;
 }
 
-.tech-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
-}
-
-/* ====== FOOTER ====== */
-
-.footer {
-    background-color: #0f172a;
-    padding: 20px;
-    text-align: center;
-    color: #94a3b8;
-}
-
-.tasa-up {
-    color: #00ff88 !important;
-    transition: color 0.4s ease;
-}
-
-.tasa-down {
-    color: #ff4d4d !important;
-    transition: color 0.4s ease;
-}
-
-.tasa-neutral {
-    color: #cccccc !important;
-}
-
-.flash {
-    animation: flashEffect 0.6s ease;
-}
-
-@keyframes flashEffect {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.15); }
-    100% { transform: scale(1); }
-}
-
-.chat-user{
-    background:#ffc107;
-    color:#000;
-    padding:8px;
-    border-radius:10px;
-    margin-bottom:6px;
-    text-align:right;
-}
-
-.chat-ia{
-    background:#444;
-    padding:8px;
-    border-radius:10px;
-    margin-bottom:6px;
+/* MÓVIL */
+@media (max-width: 991px) {
+    .navbar-collapse {
+        background: rgba(5, 8, 16, 0.98);
+        border-radius: 20px;
+        padding: 15px;
+        margin-top: 10px;
+        border: 1px solid rgba(0, 245, 255, 0.2);
+    }
+    
+    .glass-dropdown {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
 }

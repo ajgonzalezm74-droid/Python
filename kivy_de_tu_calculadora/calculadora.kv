@@ -1,0 +1,138 @@
+<CalculadoraLayout>:
+    
+    # Scroll principal para toda la interfaz
+    ScrollView:
+        do_scroll_x: False
+        do_scroll_y: True
+        
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            spacing: dp(8)
+            padding: dp(8)
+            
+            # Título
+            Label:
+                text: "💰 CALCULADORA DE TASAS VENEZUELA"
+                font_size: dp(20)
+                size_hint_y: None
+                height: dp(50)
+                bold: True
+            
+            # Tasa seleccionada
+            Label:
+                id: tasa_seleccionada
+                text: "📌 Selecciona una tasa"
+                font_size: dp(12)
+                size_hint_y: None
+                height: dp(35)
+                color: (0.2, 0.6, 0.8, 1)
+            
+            # Tasas disponibles
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(220)
+                
+                Label:
+                    text: "📊 TASAS DISPONIBLES"
+                    font_size: dp(14)
+                    size_hint_y: None
+                    height: dp(30)
+                    bold: True
+                
+                ScrollView:
+                    size_hint_y: None
+                    height: dp(185)
+                    
+                    BoxLayout:
+                        id: lista_tasas
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        spacing: dp(5)
+            
+            # Formulario productos
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(180)
+                
+                Label:
+                    text: "🛒 AGREGAR PRODUCTO"
+                    font_size: dp(14)
+                    size_hint_y: None
+                    height: dp(30)
+                    bold: True
+                
+                TextInput:
+                    id: input_nombre
+                    hint_text: "Nombre del producto"
+                    size_hint_y: None
+                    height: dp(45)
+                    font_size: dp(14)
+                
+                TextInput:
+                    id: input_precio
+                    hint_text: "Precio en Bolívares (Bs)"
+                    size_hint_y: None
+                    height: dp(45)
+                    font_size: dp(14)
+                    input_filter: 'float'
+                
+                Button:
+                    text: "➕ AÑADIR PRODUCTO"
+                    size_hint_y: None
+                    height: dp(50)
+                    font_size: dp(14)
+                    background_color: (0.2, 0.6, 0.2, 1)
+                    on_release: root.agregar_producto()
+            
+            # Lista de productos
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(200)
+                
+                Label:
+                    text: "📋 PRODUCTOS AGREGADOS"
+                    font_size: dp(12)
+                    size_hint_y: None
+                    height: dp(25)
+                    bold: True
+                
+                ScrollView:
+                    size_hint_y: None
+                    height: dp(170)
+                    
+                    BoxLayout:
+                        id: lista_productos
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        spacing: dp(2)
+            
+            # Resultados
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(250)
+                
+                Label:
+                    text: "💵 RESULTADOS EN USD"
+                    font_size: dp(14)
+                    size_hint_y: None
+                    height: dp(30)
+                    bold: True
+                
+                ScrollView:
+                    size_hint_y: None
+                    height: dp(215)
+                    
+                    BoxLayout:
+                        id: resultados_container
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        spacing: dp(2)

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block page_title %}Usuarios del Sistema{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <div class="table-header">
+        <h2>Gestión de Usuarios</h2>
+        <a href="{{ url_for('admin.usuario_nuevo') }}" class="btn-primary">
+            <i class="fas fa-plus"></i> Nuevo Usuario
+        </a>
+    </div>
+    
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Roles</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in usuarios %}
+            <tr>
+                <td>{{ u.id }}</td>
+                <td>@{{ u.username }}</td>
+                <td>{{ u.nombre }}</td>
+                <td>{{ u.email }}</td>
+                <td>
+                    {% for rol in u.roles %}
+                    <span class="role-badge">{{ rol.nombre }}</span>
+                    {% endfor %}
+                </td>
+                <td>
+                    <span class="status-badge {{ 'active' if u.activo else 'inactive' }}">
+                        {{ 'Activo' if u.activo else 'Inactivo' }}
+                    </span>
+                </td>
+                <td class="action-buttons">
+                    <a href="{{ url_for('admin.usuario_editar', id=u.id) }}" class="btn-icon" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    {% if u.id != session.user_id %}
+                    <button class="btn-icon delete" onclick="eliminarUsuario({{ u.id }})" title="Eliminar">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function eliminarUsuario(id) {
+    if (confirm('¿Estás seguro de eliminar este usuario?')) {
+        fetch(`/admin/usuarios/${id}/eliminar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'  // ✅ SIN paréntesis
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                alert(data.message);
+                location.reload();
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

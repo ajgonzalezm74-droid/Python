@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block page_title %}Editar Usuario{% endblock %}
+
+{% block content %}
+<div class="table-container" style="max-width: 600px; margin: 0 auto;">
+    <div class="table-header">
+        <h2>Editar Usuario: {{ usuario.nombre }}</h2>
+        <a href="{{ url_for('admin.usuarios') }}" class="btn-modal" style="background: #64748b;">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </div>
+    
+    <!-- FORMULARIO PRINCIPAL DE EDICIÓN -->
+    <form method="POST" action="{{ url_for('admin.usuario_editar', id=usuario.id) }}" style="margin-top: 2rem;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        
+        <div class="form-group">
+            <label><i class="fas fa-user"></i> Nombre de Usuario</label>
+            <input type="text" name="username" required class="form-control"
+                   value="{{ usuario.username }}"
+                   style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px;">
+        </div>
+        
+        <div class="form-group">
+            <label><i class="fas fa-id-card"></i> Nombre Completo</label>
+            <input type="text" name="nombre" required class="form-control"
+                   value="{{ usuario.nombre }}"
+                   style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px;">
+        </div>
+        
+        <div class="form-group">
+            <label><i class="fas fa-envelope"></i> Email</label>
+            <input type="email" name="email" required class="form-control"
+                   value="{{ usuario.email }}"
+                   style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px;">
+        </div>
+        
+        <div class="form-group">
+            <label><i class="fas fa-tags"></i> Roles</label>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 0.5rem;">
+                {% for rol in roles %}
+                <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: #f8fafc; border-radius: 8px;">
+                    <input type="checkbox" name="roles" value="{{ rol.id_rol }}"
+                           {% if rol in usuario.roles %}checked{% endif %}>
+                    <div>
+                        <strong>{{ rol.nombre }}</strong>
+                        <small style="display: block; color: var(--text-light);">{{ rol.descripcion }}</small>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="checkbox" name="activo" {% if usuario.activo %}checked{% endif %}>
+                <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                Usuario activo
+            </label>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn-primary" style="flex: 1;">
+                <i class="fas fa-save"></i> Guardar Cambios
+            </button>
+        </div>
+    </form>
+    
+    <hr style="margin: 2rem 0;">
+    
+    <!-- 🔴 FORMULARIO SEPARADO PARA CAMBIAR CONTRASEÑA -->
+    <div class="table-container" style="background: #fef9c3; border: 1px solid #fbbf24;">
+        <h3><i class="fas fa-key"></i> Cambiar Contraseña</h3>
+        <p style="color: var(--text-light); margin-bottom: 1rem;">Si no quieres cambiar la contraseña, deja este campo vacío.</p>
+        
+        <form method="POST" action="{{ url_for('admin.cambiar_password') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <input type="hidden" name="usuario_id" value="{{ usuario.id }}">
+            
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <input type="password" name="password" placeholder="Nueva contraseña" 
+                       style="flex: 1; min-width: 200px; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px;">
+                <input type="password" name="confirm_password" placeholder="Confirmar contraseña"
+                       style="flex: 1; min-width: 200px; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px;">
+                <button type="submit" class="btn-primary" style="background: #f59e0b;">
+                    <i class="fas fa-key"></i> Cambiar Contraseña
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 🔴 JavaScript para validar contraseñas -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordForm = document.querySelector('form[action*="cambiar-password"]');
+    
+    if (passwordForm) {
+        passwordForm.addEventListener('submit', function(e) {
+            const password = this.querySelector('input[name="password"]').value;
+            const confirm = this.querySelector('input[name="confirm_password"]').value;
+            
+            // Si ambos están vacíos, no hacer nada (no cambiar contraseña)
+            if (!password && !confirm) {
+                e.preventDefault();
+                alert('Por favor, ingresa una contraseña para cambiar');
+                return;
+            }
+            
+            // Si uno está lleno y el otro no
+            if (password || confirm) {
+                if (password !== confirm) {
+                    e.preventDefault();
+                    alert('Las contraseñas no coinciden');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    e.preventDefault();
+                    alert('La contraseña debe tener al menos 6 caracteres');
+                    return;
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

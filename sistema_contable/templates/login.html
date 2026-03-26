@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Contable Profesional - Iniciar Sesión</title>
+    
+    <!-- Fonts e iconos -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/styles.css') }}">
+    
+    <!-- Debug: verificar ruta del CSS -->
+    <script>
+        console.log("📁 Cargando CSS desde:", "{{ url_for('static', filename='/css/styles.css') }}");
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="login-wrapper">
+            <!-- Panel izquierdo - Branding -->
+            <div class="brand-panel">
+                <div class="brand-content">
+                    <div class="logo">
+                        <i class="fas fa-calculator"></i>
+                        <span>SGOC</span>
+                    </div>
+                    <h1>Sistema de Gestión de oficina Contable</h1>
+                    <p class="brand-description">
+                        Plataforma profesional para la administración financiera 
+                        y contable de tu empresa
+                    </p>
+                    <div class="features">
+                        <div class="feature">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>100% Seguro</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-clock"></i>
+                            <span>Actualización en tiempo real</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Reportes financieros</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-note">
+                    <p>© 2026 SGOC. Todos los derechos reservados.</p>
+                </div>
+            </div>
+
+            <!-- Panel derecho - Formulario de login -->
+            <div class="login-panel">
+                <div class="login-container">
+                    <div class="login-header">
+                        <h2>Bienvenido de nuevo</h2>
+                        <p>Ingresa tus credenciales para acceder al sistema</p>
+                    </div>
+
+                    <!-- Mensajes Flash -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">
+                                    <i class="fas fa-{% if category == 'error' %}exclamation-circle{% else %}check-circle{% endif %}"></i>
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form id="loginForm" class="login-form" method="POST" action="{{ url_for('auth.login') }}">
+                        <div class="form-group">
+                            <label for="username">
+                                <i class="fas fa-user"></i>
+                                Usuario
+                            </label>
+                            <input 
+                                type="text" 
+                                id="username" 
+                                name="username" 
+                                placeholder="ejemplo@mail.com"
+                                required
+                                autocomplete="username"
+                                value="{{ request.form.username if request.form.username }}"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">
+                                <i class="fas fa-lock"></i>
+                                Contraseña
+                            </label>
+                            <div class="password-input-wrapper">
+                                <input 
+                                    type="password" 
+                                    id="password" 
+                                    name="password" 
+                                    placeholder="••••••••"
+                                    required
+                                    autocomplete="current-password"
+                                >
+                                <button type="button" class="toggle-password" onclick="togglePassword()">
+                                    <i class="far fa-eye" id="toggleIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-options">
+                            <label class="remember-me">
+                                <input type="checkbox" name="remember">
+                                <span>Recordar mi usuario</span>
+                            </label>
+                            <a href="{{ url_for('auth.recuperar_password') }}" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                        </div>
+
+                        <button type="submit" class="btn-login" id="loginBtn">
+                            <span>Iniciar Sesión</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+
+                        <div class="security-notice">
+                            <i class="fas fa-lock"></i>
+                            <span>Acceso restringido solo para personal autorizado</span>
+                        </div>
+                    </form>
+
+                    <!--<div class="demo-credentials" onclick="fillDemoCredentials()">
+                        <p class="demo-title">🔑 Credenciales de demostración:</p>
+                        <p>Usuario: admin@mail.com</p>
+                        <p>Contraseña: User2024</p>
+                        <small>(Haz clic para autocompletar)</small>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de error -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-exclamation-circle"></i>
+                <h3>Error de autenticación</h3>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeModal()" class="btn-modal">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

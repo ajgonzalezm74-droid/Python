@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+    <!-- Clientes -->
+    {% if 'ver_clientes' in session.permisos or 'admin_total' in session.permisos %}
+    <div class="stat-card">
+        <div class="stat-header">
+            <span class="stat-title">Clientes</span>
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+        </div>
+        <div class="stat-value" id="total-clientes">0</div>
+        <div class="stat-description">Total de clientes registrados</div>
+        {% if 'crear_clientes' in session.permisos or 'admin_total' in session.permisos %}
+        <div class="stat-action">
+            <a href="{{ url_for('clientes.nuevo') }}" class="btn-primary" style="margin-top: 1rem; display: inline-block;">
+                <i class="fas fa-plus"></i> Nuevo Cliente
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <!-- Cobranzas -->
+    {% if 'ver_cobranzas' in session.permisos or 'admin_total' in session.permisos %}
+    <div class="stat-card">
+        <div class="stat-header">
+            <span class="stat-title">Cobranzas Pendientes</span>
+            <div class="stat-icon">
+                <i class="fas fa-hand-holding-usd"></i>
+            </div>
+        </div>
+        <div class="stat-value" id="total-cobranzas">$0</div>
+        <div class="stat-description">Monto total pendiente</div>
+        {% if 'crear_cobranzas' in session.permisos or 'admin_total' in session.permisos %}
+        <div class="stat-action">
+            <a href="{{ url_for('cobranzas.nuevo') }}" class="btn-primary" style="margin-top: 1rem; display: inline-block;">
+                <i class="fas fa-plus"></i> Nueva Cobranza
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <!-- Pagos -->
+    {% if 'ver_pagos' in session.permisos or 'admin_total' in session.permisos %}
+    <div class="stat-card">
+        <div class="stat-header">
+            <span class="stat-title">Pagos del Mes</span>
+            <div class="stat-icon">
+                <i class="fas fa-credit-card"></i>
+            </div>
+        </div>
+        <div class="stat-value" id="total-pagos">$0</div>
+        <div class="stat-description">Monto total recibido</div>
+        {% if 'crear_pagos' in session.permisos or 'admin_total' in session.permisos %}
+        <div class="stat-action">
+            <a href="{{ url_for('pagos.nuevo') }}" class="btn-primary" style="margin-top: 1rem; display: inline-block;">
+                <i class="fas fa-plus"></i> Nuevo Pago
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <!-- Citas -->
+    {% if 'ver_citas' in session.permisos or 'admin_total' in session.permisos %}
+    <div class="stat-card">
+        <div class="stat-header">
+            <span class="stat-title">Citas Hoy</span>
+            <div class="stat-icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+        </div>
+        <div class="stat-value" id="total-citas">0</div>
+        <div class="stat-description">Citas programadas para hoy</div>
+        {% if 'crear_citas' in session.permisos or 'admin_total' in session.permisos %}
+        <div class="stat-action">
+            <a href="{{ url_for('citas.nuevo') }}" class="btn-primary" style="margin-top: 1rem; display: inline-block;">
+                <i class="fas fa-plus"></i> Nueva Cita
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Tablas de datos -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem;">
+    <!-- Últimos Clientes -->
+    {% if 'ver_clientes' in session.permisos or 'admin_total' in session.permisos %}
+    <div class="table-container">
+        <div class="table-header">
+            <h3>Últimos Clientes</h3>
+            <a href="{{ url_for('clientes.listar') }}" class="btn-primary">Ver Todos</a>
+        </div>
+        <div style="overflow-x: auto;">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        {% if 'editar_clientes' in session.permisos or 'admin_total' in session.permisos %}
+                        <th>Acciones</th>
+                        {% endif %}
+                    </thead>
+                <tbody id="ultimos-clientes">
+                    <tr>
+                        <td colspan="3" style="text-align: center;">
+                            <i class="fas fa-spinner fa-spin"></i> Cargando clientes...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Próximas Citas -->
+    {% if 'ver_citas' in session.permisos or 'admin_total' in session.permisos %}
+    <div class="table-container">
+        <div class="table-header">
+            <h3>Próximas Citas</h3>
+            <a href="{{ url_for('citas.listar') }}" class="btn-primary">Ver Todas</a>
+        </div>
+        <div style="overflow-x: auto;">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        {% if 'editar_citas' in session.permisos or 'admin_total' in session.permisos %}
+                        <th>Acciones</th>
+                        {% endif %}
+                        
+                    </thead>
+                <tbody id="proximas-citas">
+                    <tr>
+                        <td colspan="4" style="text-align: center;">
+                            <i class="fas fa-spinner fa-spin"></i> Cargando citas...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>
+// Pasar permisos del servidor al JavaScript
+const userPermisos = {{ session.permisos|tojson }};
+// Inicializar dashboard
+if (typeof initDashboard === 'function') {
+    initDashboard(userPermisos);
+} else {
+    console.error('❌ Error: initDashboard no está definido');
+    console.log('🔍 Scripts cargados:', document.querySelectorAll('script[src]'));
+}
+</script>
+{% endblock %}

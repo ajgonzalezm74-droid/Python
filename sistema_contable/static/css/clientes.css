@@ -1,0 +1,106 @@
+/* static/css/clientes.css */
+/* Estilos específicos para el módulo de clientes */
+
+/* Modal de detalles */
+.modal-content {
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    position: sticky;
+    top: 0;
+    background: white;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header .close-btn {
+    margin-left: auto;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-light);
+    transition: color 0.3s ease;
+}
+
+.modal-header .close-btn:hover {
+    color: var(--danger-color);
+}
+
+/* Paginación */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 0.5rem;
+    border: 1px solid var(--border-color);
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.page-link:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.page-link.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.page-link:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Botones de acción en tabla */
+.btn-icon.activate:hover {
+    background: #10b981;
+    color: white;
+}
+
+/* Contador de registros */
+.registros-counter {
+    margin-top: 1rem;
+    text-align: right;
+    color: var(--text-light);
+    font-size: 0.85rem;
+}
+
+/* Tabla responsive */
+@media (max-width: 768px) {
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    .modern-table {
+        min-width: 800px;
+    }
+}
+
+/* Badges de estado */
+.status-badge.active {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge.inactive {
+    background: #fee2e2;
+    color: #991b1b;
+}

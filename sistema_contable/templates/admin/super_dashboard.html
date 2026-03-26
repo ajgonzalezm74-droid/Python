@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block page_title %}Panel Superadmin{% endblock %}
+
+{% block content %}
+<div class="card-grid">
+    <div class="card">
+        <div class="card-header">
+            <span>Total Usuarios</span>
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="card-value">{{ stats.total_usuarios }}</div>
+        <p>{{ stats.usuarios_activos }} activos</p>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <span>Roles</span>
+            <i class="fas fa-shield-alt"></i>
+        </div>
+        <div class="card-value">{{ stats.total_roles }}</div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <span>Permisos</span>
+            <i class="fas fa-key"></i>
+        </div>
+        <div class="card-value">{{ stats.total_permisos }}</div>
+    </div>
+</div>
+
+<div class="table-container">
+    <h3>Últimos Usuarios</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Usuario</th><th>Nombre</th><th>Email</th><th>Roles</th><th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in ultimos_usuarios %}
+            <tr>
+                <td>{{ u.username }}</td>
+                <td>{{ u.nombre }}</td>
+                <td>{{ u.email }}</td>
+                <td>
+                    {% for r in u.roles %}
+                        <span class="badge">{{ r.nombre }}</span>
+                    {% endfor %}
+                </td>
+                <td>{{ '✅ Activo' if u.activo else '❌ Inactivo' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

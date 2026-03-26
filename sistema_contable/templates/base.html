@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- En base.html, dentro de <head> -->
+{% block extra_css %}{% endblock %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>{% block title %}Sistema Contable{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body data-current-endpoint="{{ request.endpoint }}">
+    
+    <!-- Menú hamburguesa para pantallas pequeñas -->
+     <button class="menu-toggle" id="menuToggle" >
+         <i class="fas fa-bars"></i>
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-calculator"></i>
+                    <span>SGOC</span>
+                </div>
+            </div>
+            
+            <div class="user-info">
+                <i class="fas fa-user-circle" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                <h4>{{ session.nombre }}</h4>
+                <p>{{ session.email }}</p>
+            </div>
+            
+            <!-- Menú dinámico con acordeón -->
+            <ul class="nav-menu">
+                {% if menu_principal %}
+                    {% for menu in menu_principal %}
+                    {% set hijos = menu.hijos.all() if menu.hijos else [] %}
+                    <li class="nav-item {% if hijos|length > 0 %}has-children{% endif %}">
+                        {% if menu.url %}
+                        <a href="{{ url_for(menu.url) }}" class="nav-link {% if request.endpoint == menu.url %}active{% endif %}">
+                            <i class="{{ menu.icono }}"></i>
+                            <span>{{ menu.nombre }}</span>
+                        </a>
+                        {% else %}
+                        <a href="#" class="nav-link parent" data-id="{{ menu.id }}">
+                            <i class="{{ menu.icono }}"></i>
+                            <span>{{ menu.nombre }}</span>
+                            {% if hijos|length > 0 %}
+                            <i class="fas fa-chevron-down arrow" style="margin-left: auto;"></i>
+                            {% endif %}
+                        </a>
+                        {% endif %}
+                        
+                        {% if hijos|length > 0 %}
+                        <ul class="sub-menu">
+                            {% for hijo in hijos|sort(attribute='orden') %}
+                            <li class="nav-item">
+                                <a href="{{ url_for(hijo.url) if hijo.url else '#' }}" 
+                                   class="nav-link {% if request.endpoint == hijo.url %}active{% endif %}">
+                                    <i class="{{ hijo.icono }}"></i>
+                                    <span>{{ hijo.nombre }}</span>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="nav-item">
+                        <div class="nav-link" style="color: #ff6b6b;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Cargando menús...</span>
+                        </div>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+        
+        <!-- Contenido principal -->
+        <div class="main-content">
+            <div class="top-bar">
+                <div class="page-title">
+                    <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+                </div>
+                
+                <div class="user-menu">
+                    <span class="user-name">{{ session.nombre }}</span>
+                    <a href="{{ url_for('auth.logout') }}" class="btn-logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Cerrar Sesión</span>
+                    </a>
+                </div>
+                
+            </div>
+            
+            <!-- Mensajes Flash -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <i class="fas fa-{% if category == 'error' %}exclamation-circle{% elif category == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <!-- Contenido específico de cada página -->
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    
+    
+     <!-- En base.html, al final antes de cerrar </body> -->
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script src="{{ url_for('static', filename='js/menu_acordeon.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

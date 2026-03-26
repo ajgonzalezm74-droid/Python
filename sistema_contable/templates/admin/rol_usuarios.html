@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block page_title %}Usuarios con rol {{ rol.nombre }}{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <div class="table-header">
+        <h2><i class="fas fa-users"></i> Usuarios con rol: {{ rol.nombre }}</h2>
+        <a href="{{ url_for('admin.listar_roles') }}" class="btn-modal" style="background: #64748b;">
+            <i class="fas fa-arrow-left"></i> Volver a Roles
+        </a>
+    </div>
+    
+    <p style="margin-bottom: 1rem;">{{ rol.descripcion }}</p>
+    
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </thead>
+        <tbody>
+            {% for u in usuarios %}
+            <tr>
+                <td>{{ u.id }}</td>
+                <td>@{{ u.username }}</td>
+                <td>{{ u.nombre }}</td>
+                <td>{{ u.email }}</td>
+                <td>
+                    <span class="status-badge {{ 'active' if u.activo else 'inactive' }}">
+                        {{ 'Activo' if u.activo else 'Inactivo' }}
+                    </span>
+                </td>
+                <td class="action-buttons">
+                    <a href="{{ url_for('admin.usuario_editar', id=u.id) }}" class="btn-icon" title="Editar usuario">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center;">No hay usuarios con este rol</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

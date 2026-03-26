@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Clientes{% endblock %}
+
+{% block page_title %}Clientes{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/clientes.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <div class="table-header">
+        <h2><i class="fas fa-users"></i> Gestión de Clientes</h2>
+        {% if 'crear_clientes' in session.permisos or 'admin_total' in session.permisos %}
+        <a href="{{ url_for('clientes.nuevo') }}" class="btn-primary">
+            <i class="fas fa-plus"></i> Nuevo Cliente
+        </a>
+        {% endif %}
+    </div>
+    
+    <!-- Filtros -->
+    <div class="filters-bar">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Buscar por nombre, documento o email...">
+        <select id="statusFilter" class="filter-select">
+            <option value="todos">Todos los clientes</option>
+            <option value="activos">Activos</option>
+            <option value="inactivos">Inactivos</option>
+        </select>
+        <button id="btnExportar" class="btn-primary" style="background: #10b981;">
+            <i class="fas fa-file-excel"></i> Exportar
+        </button>
+    </div>
+    
+    <!-- Tabla -->
+    <div class="table-container" style="overflow-x: auto;">
+        <table class="modern-table" id="tabla-clientes">
+            <thead>
+                
+                    <th>ID</th>
+                    <th>Documento</th>
+                    <th>Nombre Completo</th>
+                    <th>Email</th>
+                    <th>Teléfono</th>
+                    <th>Compañía</th>
+                    <th>Estado</th>
+                    <th>Fecha Creación</th>
+                    <th>Acciones</th>
+                </thead>
+            <tbody>
+                {% for cliente in clientes %}
+                <tr data-estado="{{ 'activo' if cliente.activo else 'inactivo' }}">
+                    <td>#{{ cliente.id_cliente }}</td>
+                    <td>
+                        {% if cliente.tipo_documento %}
+                        {{ cliente.tipo_documento }}-{{ cliente.id_documento }}
+                        {% else %}
+                        {{ cliente.id_documento or '---' }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <strong>{{ cliente.nombre }} {{ cliente.apellidos }}</strong>
+                        {% if cliente.cargo %}
+                        <br><small class="text-muted">{{ cliente.cargo }}</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if cliente.email %}
+                        <a href="mailto:{{ cliente.email }}" class="email-link">
+                            <i class="fas fa-envelope"></i> {{ cliente.email }}
+                        </a>
+                        {% else %}---{% endif %}
+                    </td>
+                    <td>
+                        {% if cliente.telefono %}
+                        <a href="tel:{{ cliente.telefono }}" class="phone-link">
+                            <i class="fas fa-phone"></i> {{ cliente.telefono }}
+                        </a>
+                        {% if cliente.telefono_alternativo %}
+                        <br><small>{{ cliente.telefono_alternativo }}</small>
+                        {% endif %}
+                        {% else %}---{% endif %}
+                    </td>
+                    <td>{{ cliente.nombre_compania or '---' }}</td>
+                    <td>
+                        <span class="status-badge {{ 'active' if cliente.activo else 'inactive' }}">
+                            {{ 'Activo' if cliente.activo else 'Inactivo' }}
+                        </span>
+                    </td>
+                    <td>
+                        <small>{{ cliente.fecha_creacion.strftime('%d/%m/%Y') if cliente.fecha_creacion else '---' }}</small>
+                    </td>
+                    <td class="action-buttons">
+                        <button class="btn-icon view" onclick="verCliente({{ cliente.id_cliente }})" title="Ver detalles">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        
+                        {% if 'editar_clientes' in session.permisos or 'admin_total' in session.permisos %}
+                        <a href="{{ url_for('clientes.editar', id=cliente.id_cliente) }}" class="btn-icon" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% if 'eliminar_clientes' in session.permisos or 'admin_total' in session.permisos %}
+                            {% if cliente.activo %}
+                            <button class="btn-icon delete" onclick="eliminarCliente({{ cliente.id_cliente }})" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            {% else %}
+                            <button class="btn-icon activate" onclick="activarCliente({{ cliente.id_cliente }})" title="Activar" style="color: #10b981;">
+                                <i class="fas fa-check-circle"></i>
+                            </button>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9" class="text-center" style="padding: 3rem;">
+                        <i class="fas fa-users" style="font-size: 3rem; color: var(--text-light);"></i>
+                        <p style="margin-top: 1rem;">No hay clientes registrados</p>
+                        {% if 'crear_clientes' in session.permisos or 'admin_total' in session.permisos %}
+                        <a href="{{ url_for('clientes.nuevo') }}" class="btn-primary" style="margin-top: 1rem;">
+                            <i class="fas fa-plus"></i> Crear primer cliente
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Paginación -->
+    <div id="pagination"></div>
+</div>
+
+<!-- Modal de detalles -->
+<div id="clienteModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <i class="fas fa-user-circle" style="font-size: 2rem;"></i>
+            <h3>Detalles del Cliente</h3>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="detallesCliente" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <p>Cargando información...</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button onclick="clientesModule?.cerrarModal()" class="btn-modal">Cerrar</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/clientes.js') }}"></script>
+{% endblock %}

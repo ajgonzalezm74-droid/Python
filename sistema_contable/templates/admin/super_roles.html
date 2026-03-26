@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block page_title %}Gestión de Roles{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <div class="table-header">
+        <h2><i class="fas fa-shield-alt"></i> Roles del Sistema</h2>
+        <!-- 🔴 Asegúrate que esta URL sea correcta -->
+        <a href="{{ url_for('admin.crear_rol') }}" class="btn-primary">
+            <i class="fas fa-plus"></i> Nuevo Rol
+        </a>
+    </div>
+    
+    <!-- Filtros -->
+    <div class="filters-bar">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Buscar rol...">
+    </div>
+    
+    <table class="modern-table" id="tabla-roles">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Permisos</th>
+                <th>Usuarios</th>
+                <th>Acciones</th>
+            </thead>
+        <tbody>
+            {% for rol in roles %}
+            <tr>
+                <td>#{{ rol.id_rol }}</td>
+                <td>
+                    <strong>{{ rol.nombre }}</strong>
+                    {% if rol.nombre == 'superadmin' %}
+                        <span style="background: gold; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px;">Sistema</span>
+                    {% endif %}
+                </td>
+                <td>{{ rol.descripcion }}</td>
+                <td>
+                    <span class="role-badge" style="background: var(--primary-color);">
+                        {{ rol.permisos|length }} permisos
+                    </span>
+                    <button class="btn-icon" onclick="verPermisos({{ rol.id_rol }})" title="Ver permisos">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </td>
+                <td>
+                    <span class="role-badge" style="background: #10b981;">
+                        {{ rol.usuarios|length }} usuarios
+                    </span>
+                    {% if rol.usuarios|length > 0 %}
+                    <a href="{{ url_for('admin.rol_usuarios', id=rol.id_rol) }}" class="btn-icon" title="Ver usuarios">
+                        <i class="fas fa-users"></i>
+                    </a>
+                    {% endif %}
+                </td>
+                <td class="action-buttons">
+                    <a href="{{ url_for('admin.editar_rol', id=rol.id_rol) }}" class="btn-icon" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    {% if rol.nombre != 'superadmin' and rol.usuarios|length == 0 %}
+                    <button class="btn-icon delete" onclick="eliminarRol({{ rol.id_rol }})" title="Eliminar">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center;">No hay roles creados. <a href="{{ url_for('admin.crear_rol') }}">Crear el primero</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal para ver permisos -->
+<div id="permisosModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <i class="fas fa-key"></i>
+            <h3>Permisos del Rol</h3>
+        </div>
+        <div class="modal-body">
+            <div id="lista-permisos"></div>
+        </div>
+        <div class="modal-footer">
+            <button onclick="cerrarModal()" class="btn-modal">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Filtro de búsqueda
+document.getElementById('searchInput').addEventListener('keyup', function() {
+    const searchTerm = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#tabla-roles tbody tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+});
+
+function verPermisos(id) {
+    fetch(`/admin/roles/${id}/permisos`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+            
+            // Agrupar por módulo
+            const porModulo = {};
+            data.forEach(p => {
+                if (!porModulo[p.modulo]) porModulo[p.modulo] = [];
+                porModulo[p.modulo].push(p);
+            });
+            
+            let html = '';
+            for (const [modulo, permisos] of Object.entries(porModulo)) {
+                html += `<h4 style="margin: 1rem 0 0.5rem; color: var(--primary-color);">${modulo.toUpperCase()}</h4>`;
+                html += '<ul style="list-style: none; padding-left: 0;">';
+                permisos.forEach(p => {
+                    html += `<li style="padding: 0.25rem 0;"><i class="fas fa-check-circle" style="color: #10b981;"></i> ${p.nombre}</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            document.getElementById('lista-permisos').innerHTML = html;
+            document.getElementById('permisosModal').classList.add('active');
+        });
+}
+
+function eliminarRol(id) {
+    if (confirm('¿Estás seguro de eliminar este rol?')) {
+        fetch(`/admin/roles/${id}/eliminar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                alert(data.message);
+                location.reload();
+            }
+        });
+    }
+}
+
+function cerrarModal() {
+    document.getElementById('permisosModal').classList.remove('active');
+}
+</script>
+{% endblock %}

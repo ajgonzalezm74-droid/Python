@@ -1,0 +1,68 @@
+<!-- templates/admin/usuario_nuevo.html -->
+{% extends "base.html" %}
+
+{% block page_title %}Crear Nuevo Usuario{% endblock %}
+
+{% block content %}
+<div class="table-container" style="max-width: 600px; margin: 0 auto;">
+    <h2>Crear Nuevo Usuario</h2>
+    
+    <form method="POST" style="margin-top: 2rem;">
+        <div class="form-group">
+            <label>Nombre de Usuario</label>
+            <input type="text" name="username" required class="form-control"
+                   value="{{ datos.username if datos else '' }}"
+                   style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px;">
+        </div>
+        
+        <div class="form-group">
+            <label>Nombre Completo</label>
+            <input type="text" name="nombre" required class="form-control"
+                   value="{{ datos.nombre if datos else '' }}"
+                   style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px;">
+        </div>
+        
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" required class="form-control"
+                   value="{{ datos.email if datos else '' }}"
+                   style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px;">
+        </div>
+        
+        <div class="form-group">
+            <label>Contraseña</label>
+            <input type="password" name="password" required class="form-control"
+                   style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px;">
+        </div>
+        
+        <!-- Resto del formulario igual -->
+        <div class="form-group">
+            <label>Roles</label>
+            {% for rol in roles %}
+            <label style="display: block; margin: 0.5rem 0;">
+                <input type="checkbox" name="roles" value="{{ rol.id_rol }}"
+                       {% if datos and rol.id_rol|string in datos.getlist('roles') %}checked{% endif %}>
+                <strong>{{ rol.nombre }}</strong> - {{ rol.descripcion }}
+            </label>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            <label>
+                <input type="checkbox" name="activo" 
+                       {% if not datos or 'activo' in datos %}checked{% endif %}>
+                Usuario activo
+            </label>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-save"></i> Guardar Usuario
+            </button>
+            <a href="{{ url_for('admin.usuarios') }}" class="btn-modal" style="background: #64748b;">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
