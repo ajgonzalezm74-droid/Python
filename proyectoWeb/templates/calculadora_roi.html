@@ -6,31 +6,62 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-5 col-md-8">
-            <div class="card">
-                <h2 class="text-center mb-4">📊 ROI Estimator</h2>
+            <div class="card border-0 shadow-lg" style="background: rgba(22, 26, 32, 0.95); backdrop-filter: blur(10px);">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4" style="background: linear-gradient(135deg, #fff, #00e0ff); background-clip: text; -webkit-background-clip: text; color: transparent;">ROI Estimator</h2>
 
-                <form method="POST">
-                    <div class="calc-input-group">
-                        <label for="investment">Inversión USD</label>
-                        <input type="number" name="investment" placeholder="Ingrese su inversión" required>
+                    <form method="POST">
+                        <!-- Grupo 1: Inversión USD -->
+                        <div class="mb-4">
+                            <label for="investment" class="form-label fw-semibold text-secondary-emphasis mb-2">Inversión USD</label>
+                            <input type="number" 
+                                   class="form-control bg-dark bg-opacity-50 border-cyan text-light" 
+                                   id="investment" 
+                                   name="investment" 
+                                   placeholder="Ingrese su inversión" 
+                                   required
+                                   style="border-color: rgba(0, 224, 255, 0.3); border-radius: 12px; padding: 0.75rem;">
+                        </div>
+
+                        <!-- Grupo 2: Beneficio mensual -->
+                        <div class="mb-4">
+                            <label for="monthlySaving" class="form-label fw-semibold text-secondary-emphasis mb-2">Beneficio mensual</label>
+                            <input type="number" 
+                                   class="form-control bg-dark bg-opacity-50 border-cyan text-light" 
+                                   id="monthlySaving" 
+                                   name="monthlySaving" 
+                                   placeholder="Ingrese beneficio mensual" 
+                                   required
+                                   style="border-color: rgba(0, 224, 255, 0.3); border-radius: 12px; padding: 0.75rem;">
+                        </div>
+
+                        <!-- Grupo 3: Meses -->
+                        <div class="mb-4">
+                            <label for="months" class="form-label fw-semibold text-secondary-emphasis mb-2">Meses</label>
+                            <input type="number" 
+                                   class="form-control bg-dark bg-opacity-50 border-cyan text-light" 
+                                   id="months" 
+                                   name="months" 
+                                   placeholder="Ingrese número de meses" 
+                                   required
+                                   style="border-color: rgba(0, 224, 255, 0.3); border-radius: 12px; padding: 0.75rem;">
+                        </div>
+
+                        <!-- Botón -->
+                        <button type="submit" 
+                                class="btn w-100 mt-2 py-3 fw-semibold text-uppercase" 
+                                style="background: linear-gradient(135deg, #00e0ff, #3b82f6); border: none; border-radius: 40px; color: #0a0c10; letter-spacing: 1px;">
+                            Calcular ROI
+                        </button>
+                    </form>
+
+                    {% if resultado %}
+                    <div class="alert alert-info mt-4 text-center mb-0" 
+                         style="background: linear-gradient(135deg, rgba(0, 224, 255, 0.1), rgba(59, 130, 246, 0.1)); border: 1px solid rgba(0, 224, 255, 0.3); border-radius: 16px; color: #00e0ff; font-weight: 600;">
+                        {{ resultado }}
                     </div>
-
-                    <div class="calc-input-group">
-                        <label for="monthlySaving">Beneficio mensual</label>
-                        <input type="number" name="monthlySaving" placeholder="Ingrese beneficio mensual" required>
-                    </div>
-
-                    <div class="calc-input-group">
-                        <label for="months">Meses</label>
-                        <input type="number" name="months" placeholder="Ingrese número de meses" required>
-                    </div>
-
-                    <button type="submit" class="btn-calc w-100 mt-3">Calcular ROI</button>
-                </form>
-
-                {% if resultado %}
-                <div class="calc-result mt-3">{{ resultado }}</div>
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>

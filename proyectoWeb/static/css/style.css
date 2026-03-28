@@ -1,123 +1,601 @@
-/* ===== FONDO FUTURISTA ANIMADO ===== */
+/* ============================================
+   FILE: static/css/style.css
+   Professional Redesign - AJG Solution
+   WITH DROPDOWN FIX
+   ============================================ */
+
+/* --- 1. GLOBAL VARIABLES & RESETS --- */
+:root {
+    /* Color Palette - Professional & Modern */
+    --bg-primary: #0a0c10;
+    --bg-secondary: #111318;
+    --bg-card: rgba(22, 26, 32, 0.85);
+    --bg-card-solid: #161a20;
+    --border-glow: rgba(0, 255, 255, 0.2);
+    --text-primary: #eef2ff;
+    --text-secondary: #a0a8c0;
+    --accent-cyan: #00e0ff;
+    --accent-blue: #3b82f6;
+    --accent-purple: #8b5cf6;
+    --accent-success: #10b981;
+    --accent-danger: #ef4444;
+    --accent-warning: #f59e0b;
+    --gradient-1: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    --gradient-2: linear-gradient(135deg, #00e0ff20 0%, #3b82f620 100%);
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-glow: 0 0 15px rgba(0, 224, 255, 0.2);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-  font-family: 'Inter', sans-serif;
-  /* El gradiente está bien, pero aseguremos que el texto sea claro */
-  background: radial-gradient(circle at 20% 30%, #26488d, #02040a) fixed; 
-  color: #ffffff; /* Blanco puro para máximo contraste */
-  overflow-x: hidden;
-  line-height: 1.6; /* Mejor espacio entre líneas */
-}
-
-
-/* ===== NAV LINK FUTURISTA (AJG SOLUTION) ===== */
-
-.nav-link-glow {
-  position: relative;
-  font-weight: 600;
-  color: #cbdff2 !important;
-  padding: 10px 18px !important;
-  border-radius: 40px;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(6px);
-  
-}
-
-/* glow base */
-.nav-link-glow::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 30px;
-  background: linear-gradient(120deg, transparent, rgba(59,130,246,0.4), transparent);
-  opacity: 0;
-  transition: 0.4s;
-}
-
-/* borde neon */
-.nav-link-glow::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 40px;
-  border: 1px solid rgba(59,130,246,0.3);
-  transition: 0.3s;
-}
-
-/* hover efecto */
-.nav-link-glow:hover {
-  color: #ffffff !important;
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 0 20px rgba(59,130,246,0.4);
-}
-
-.nav-link-glow:hover::before {
-  opacity: 1;
-}
-
-.nav-link-glow:hover::after {
-  border-color: #3b82f6;
-  box-shadow: 0 0 15px rgba(59,130,246,0.6);
-}
-
-
-/* ===== TEXTO MARCA ===== */
-.brand-glow-container {
+    background: var(--bg-primary);
+    background-image: radial-gradient(circle at 25% 0%, rgba(0, 224, 255, 0.03) 0%, transparent 50%);
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+}
+
+/* --- 2. TYPOGRAPHY & SCROLLBAR --- */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #ffffff 0%, #a0a8c0 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+h2 {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    display: inline-block;
+}
+
+h2::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
     width: 60px;
-    height: 60px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px; /* Cuadrado con esquinas suaves */
-    padding: 5px;
-    box-shadow: 0 0 15px rgba(96, 165, 250, 0.4); /* Resplandor azul suave */
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent-cyan);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-blue);
+}
+
+/* --- 3. NAVBAR - Professional & Clean --- */
+.ftco-navbar-light {
+    background: rgba(10, 12, 16, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 224, 255, 0.1);
+    padding: 0.75rem 0;
     transition: all 0.3s ease;
+    position: relative;
+    z-index: 1060;
+}
+
+.navbar {
+    position: relative;
+    z-index: 1060;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #ffffff, var(--accent-cyan));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent !important;
 }
 
 .brand-logo-img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+    height: 40px;
+    width: auto;
+    transition: transform 0.3s ease;
 }
 
-.navbar-brand:hover .brand-glow-container {
-    box-shadow: 0 0 25px rgba(45, 212, 191, 0.6); /* Cambia de color al pasar el mouse */
-    transform: scale(1.1);
+.brand-logo-img:hover {
+    transform: scale(1.05);
 }
 
-
-/*calculado roi*/
-.calc-input-group label {
-    display: block;
-    margin-bottom: 8px;
+.nav-link {
+    color: var(--text-secondary) !important;
     font-weight: 500;
-    color: #cbd5e6;
+    transition: all 0.3s ease;
+    margin: 0 0.25rem;
+    border-radius: 8px;
 }
 
-.calc-input-group input {
-    width: 100%;
-    padding: 12px 16px;
-    border-radius: 24px;
-    background: #0f3b72;
-    border: 1px solid #2563eb;
+.nav-link:hover, .nav-link.active {
+    color: var(--accent-cyan) !important;
+    background: rgba(0, 224, 255, 0.1);
+}
+
+/* --- FIXED DROPDOWN MENU - Ensures it appears above all content --- */
+.dropdown-menu {
+    position: absolute !important;
+    z-index: 1070 !important;
+    background: rgba(22, 26, 32, 0.98) !important;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 224, 255, 0.2);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    transform-origin: top center;
+    animation: dropdownFadeIn 0.2s ease-out;
+}
+
+/* Fix for Bootstrap dropdown positioning */
+.dropdown-menu.show {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Ensure dropdown is above modals and other content */
+.dropdown, .btn-group, .nav-item.dropdown {
+    position: relative;
+    z-index: 1065;
+}
+
+/* Animation for dropdown */
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Dropdown items styling */
+.dropdown-item {
+    color: var(--text-secondary);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    padding: 0.6rem 1rem;
+}
+
+.dropdown-item:hover {
+    background: linear-gradient(90deg, rgba(0, 224, 255, 0.1), rgba(59, 130, 246, 0.1));
+    color: var(--accent-cyan);
+    transform: translateX(4px);
+}
+
+.dropdown-divider {
+    border-top-color: rgba(0, 224, 255, 0.2);
+}
+
+/* Ensure navbar toggler doesn't conflict */
+.navbar-toggler {
+    z-index: 1061;
+    position: relative;
+}
+
+/* Collapse navbar on mobile - ensure proper stacking */
+.navbar-collapse {
+    z-index: 1060;
+}
+
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        background: rgba(10, 12, 16, 0.98);
+        backdrop-filter: blur(12px);
+        padding: 1rem;
+        border-radius: 12px;
+        margin-top: 0.5rem;
+        border: 1px solid rgba(0, 224, 255, 0.1);
+    }
+    
+    .dropdown-menu {
+        position: relative !important;
+        background: rgba(22, 26, 32, 0.95) !important;
+        margin-top: 0;
+        margin-left: 1rem;
+        width: calc(100% - 1rem);
+    }
+}
+
+/* --- 4. BUTTONS & INTERACTIVE ELEMENTS --- */
+.btn-calc, .btn-primary, .btn-submit, button[type="submit"] {
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+    border: none;
+    color: #0a0c10;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 40px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 224, 255, 0.2);
+    letter-spacing: 0.5px;
+}
+
+.btn-calc:hover, .btn-primary:hover, .btn-submit:hover, button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 224, 255, 0.3);
+    filter: brightness(1.05);
+}
+
+.btn-outline-danger {
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: var(--accent-danger);
+    background: transparent;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-danger:hover {
+    background: var(--accent-danger);
     color: white;
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    transition: all 0.2s;
+    border-color: var(--accent-danger);
 }
 
-.calc-input-group input:focus {
+/* --- 5. CARDS & GLASS MORPHISM --- */
+.glass-card, .card, .contact-info, .styled-form, .calc-result, .result-box {
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 224, 255, 0.15);
+    border-radius: 24px;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+}
+
+.glass-card:hover, .card:hover {
+    border-color: rgba(0, 224, 255, 0.3);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    transform: translateY(-2px);
+}
+
+.card {
+    background: var(--bg-card-solid);
+    border: none;
+}
+
+.card-header {
+    background: linear-gradient(135deg, rgba(0, 224, 255, 0.1), transparent);
+    border-bottom: 1px solid rgba(0, 224, 255, 0.2);
+    color: var(--accent-cyan);
+    font-weight: 600;
+    border-radius: 24px 24px 0 0 !important;
+}
+
+/* --- 6. FORM INPUTS - Clean & Modern --- */
+.input-tech, .form-control, input, select, textarea {
+    background: rgba(10, 12, 16, 0.6);
+    border: 1px solid rgba(0, 224, 255, 0.2);
+    color: var(--text-primary);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.input-tech:focus, .form-control:focus, input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 6px rgba(37,99,235,0.5);
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 3px rgba(0, 224, 255, 0.2);
+    background: rgba(10, 12, 16, 0.8);
 }
 
-.calc-result {
-    background: rgba(12, 51, 112, 0.2);
-    border-radius: 28px;
-    padding: 1rem;
+.label-tech {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    display: block;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Result Input */
+.result-input {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border: 1px solid var(--accent-cyan);
+    color: var(--accent-cyan);
+    font-size: 1.75rem;
     font-weight: 700;
-    font-family: monospace;
     text-align: center;
-    font-size: 1.3rem;
+    border-radius: 16px;
+    padding: 1rem;
+    width: 100%;
+    letter-spacing: 1px;
+}
+
+/* --- 7. TABLES & HISTORIAL --- */
+.table {
+    color: var(--text-secondary);
+}
+
+.table-dark {
+    background: transparent;
+}
+
+.table-borderless td, .table-borderless th {
+    border: none;
+}
+
+.table-responsive::-webkit-scrollbar {
+    height: 4px;
+}
+
+/* --- 8. CONTACT PAGE - Professional Layout --- */
+.contact-section {
+    padding: 4rem 0;
+    position: relative;
+    z-index: 1;
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.contact-info {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.info-item .icon {
+    font-size: 2rem;
+    background: rgba(0, 224, 255, 0.1);
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    color: var(--accent-cyan);
+}
+
+.info-item h3 {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+    color: var(--text-secondary);
+    background: none;
+    background-clip: unset;
+    -webkit-background-clip: unset;
+    color: var(--text-secondary);
+}
+
+.info-item p {
+    margin-bottom: 0;
+    font-weight: 500;
+}
+
+.helper-text {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    border-top: 1px solid rgba(0, 224, 255, 0.1);
+    padding-top: 1rem;
+}
+
+.styled-form {
+    padding: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* --- 9. TENDENCY PAGE & RESULTS --- */
+.text-success {
+    color: var(--accent-success) !important;
+}
+
+.text-danger {
+    color: var(--accent-danger) !important;
+}
+
+.text-warning {
+    color: var(--accent-warning) !important;
+}
+
+.shadow {
+    box-shadow: var(--shadow-sm) !important;
+}
+
+/* --- 10. FOOTER --- */
+.footer {
+    background: var(--bg-secondary);
+    border-top: 1px solid rgba(0, 224, 255, 0.1);
+    padding: 2rem 0;
+    margin-top: auto;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* --- 11. RESPONSIVE ADJUSTMENTS --- */
+@media (max-width: 768px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    .glass-card, .card {
+        padding: 1.25rem !important;
+    }
+    
+    .result-input {
+        font-size: 1.25rem;
+        padding: 0.75rem;
+    }
+}
+
+/* --- 12. ANIMATIONS & UTILITIES --- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.glass-card, .card, .contact-info, .styled-form {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Mini Dashboard */
+.bg-black-20 {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
+}
+
+.text-cyan-glow {
+    color: var(--accent-cyan);
+    text-shadow: 0 0 8px rgba(0, 224, 255, 0.3);
+}
+
+/* --- 13. HERO SECTION (About Page) --- */
+.hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    padding: 2rem;
+    background: radial-gradient(circle at 10% 20%, rgba(0, 224, 255, 0.05), transparent);
+    position: relative;
+    z-index: 1;
+}
+
+.hero .card {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 224, 255, 0.2);
+    max-width: 50rem;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* --- 14. TASA ITEMS & SPECIAL ELEMENTS --- */
+.tasa-item {
+    text-align: center;
+    padding: 0.5rem;
+}
+
+.border-start, .border-end {
+    border-color: rgba(0, 224, 255, 0.2) !important;
+}
+
+/* Ensure all interactive elements have proper cursor */
+button, .btn, [role="button"], .dropdown-item {
+    cursor: pointer;
+}
+
+/* Fix for Bootstrap conflicting styles */
+.btn-primary {
+    --bs-btn-bg: none;
+    --bs-btn-border-color: none;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+}
+
+/* Additional fix to ensure dropdown is above modal backdrop if any */
+.modal-backdrop {
+    z-index: 1040 !important;
+}
+
+.dropdown-menu {
+    z-index: 1070 !important;
+}
+
+/* Fix for any container that might clip the dropdown */
+.container, .container-fluid, .row, .col, [class*="col-"] {
+    overflow: visible !important;
+}
+
+/* Ensure navbar doesn't clip dropdown */
+.navbar {
+    overflow: visible !important;
+}
+
+.navbar-collapse {
+    overflow: visible !important;
+}
+
+/* Fix for mobile dropdown positioning */
+@media (max-width: 991.98px) {
+    .dropdown-menu {
+        position: static !important;
+        float: none;
+        width: auto;
+        margin-top: 0;
+        background-color: transparent;
+        border: 0;
+        box-shadow: none;
+    }
+    
+    .dropdown-menu.show {
+        display: block;
+        background: rgba(22, 26, 32, 0.95) !important;
+        margin-top: 0.5rem;
+        border: 1px solid rgba(0, 224, 255, 0.2);
+        box-shadow: var(--shadow-md);
+    }
 }
