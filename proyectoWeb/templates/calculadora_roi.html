@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Calculadora ROI | AJG{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-8">
+            <div class="card">
+                <h2 class="text-center mb-4">📊 ROI Estimator</h2>
+
+                <form method="POST">
+                    <div class="calc-input-group">
+                        <label for="investment">Inversión USD</label>
+                        <input type="number" name="investment" placeholder="Ingrese su inversión" required>
+                    </div>
+
+                    <div class="calc-input-group">
+                        <label for="monthlySaving">Beneficio mensual</label>
+                        <input type="number" name="monthlySaving" placeholder="Ingrese beneficio mensual" required>
+                    </div>
+
+                    <div class="calc-input-group">
+                        <label for="months">Meses</label>
+                        <input type="number" name="months" placeholder="Ingrese número de meses" required>
+                    </div>
+
+                    <button type="submit" class="btn-calc w-100 mt-3">Calcular ROI</button>
+                </form>
+
+                {% if resultado %}
+                <div class="calc-result mt-3">{{ resultado }}</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

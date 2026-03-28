@@ -1,0 +1,81 @@
+  :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --text: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            background-color: #f4f7f6;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--primary);
+            height: 100vh;
+            color: var(--text);
+            transition: all 0.3s;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            background: #1a252f;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Acordeón */
+        .accordion-item {
+            border-bottom: 1px solid #34495e;
+        }
+
+        .accordion-header {
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        .accordion-header:hover {
+            background-color: #3e5871;
+        }
+
+        .accordion-content {
+            background-color: #34495e;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .accordion-content a {
+            display: block;
+            padding: 10px 40px;
+            color: #bdc3c7;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .accordion-content a:hover {
+            color: white;
+            background-color: var(--accent);
+        }
+
+        /* Contenido Principal */
+        .main-content {
+            flex-grow: 1;
+            padding: 40px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template,request
+from flask import Blueprint, render_template,request,jsonify
 from exchange_provider import ExchangeProvider
 from services.tasas_service import guardar_si_cambia, actualizar_todo
 from services.analisis_service import calcular_variacion_rango, obtener_historial_por_rango
@@ -155,11 +155,31 @@ def historial_tendencia():
 )
 
 
-
+#-------------------------
+# CONTACTO
 @views.route("/contacto")
 def contacto():
     
-    #tasas = actualizar_todo() # Se asegura de tener lo último al calcular
-    
     return render_template("contacto.html")
 
+# calculadora ROI
+  
+@views.route("/calculadora-roi", methods=["GET", "POST"])
+def calculadora_roi():
+    resultado = None
+    if request.method == "POST":
+        try:
+            inversion = float(request.form.get("investment", 0))
+            beneficio_mensual = float(request.form.get("monthlySaving", 0))
+            meses = int(request.form.get("months", 0))
+
+            if meses > 0 and inversion > 0:
+                roi_total = beneficio_mensual * meses
+                roi_porcentaje = (roi_total / inversion) * 100
+                resultado = f"ROI Total: ${roi_total:,.2f} | ROI %: {roi_porcentaje:.2f}%"
+            else:
+                resultado = "Ingrese valores válidos."
+        except ValueError:
+            resultado = "Error: Valores numéricos inválidos."
+
+    return render_template("calculadora_roi.html", resultado=resultado)   

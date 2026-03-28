@@ -10,8 +10,12 @@
             <!-- TARJETA PRINCIPAL GLASS -->
             <div class="glass-card p-4 shadow-2xl mb-4">
                 <div class="text-center mb-4">
-                    <h2 class="brand-glow mb-1">CALCULADORA</h2>
-                    <p class="text-muted small text-uppercase letter-spacing-2">Conversión de Divisas en Tiempo Real</p>
+                    
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bank2" viewBox="0 0 16 16">
+                    <path d="M8.277.084a.5.5 0 0 0-.554 0l-7.5 5A.5.5 0 0 0 .5 6h1.875v7H1.5a.5.5 0 0 0 0 1h13a.5.5 0 1 0 0-1h-.875V6H15.5a.5.5 0 0 0 .277-.916zM12.375 6v7h-1.25V6zm-2.5 0v7h-1.25V6zm-2.5 0v7h-1.25V6zm-2.5 0v7h-1.25V6zM8 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2M.5 15a.5.5 0 0 0 0 1h15a.5.5 0 1 0 0-1z"/>
+                    </svg>
+                    
+                    <p class="text-primary">Conversión de Divisas en Tiempo Real</p>
                 </div>
 
                 <!-- MINI DASHBOARD DE TASAS (Simplificado) -->
@@ -53,19 +57,24 @@
 
                 <!-- RESULTADO DESTACADO -->
                 <div class="result-box mb-4">
-                    <span class="small text-muted d-block mb-1">Total en Bolívares (VES)</span>
+                    <span class="small mb-1">Total en Bolívares (VES)</span>
                     <input type="text" id="resultado_ves" class="result-input" readonly placeholder="0,00">
                 </div>
 
-                <button class="btn btn-tech w-100 py-3" onclick="agregarCalculo()">
-                    + AGREGAR A LA LISTA
-                </button>
+
+                <div class="d-grid gap-2  mx-auto">
+                    <button class="btn btn-primary type="button"" onclick="agregarCalculo()">
+                        + AGREGAR A LA LISTA
+                    </button>
+                </div>    
+
+               
             </div>
 
             <!-- HISTORIAL (Simplificado) -->
             <div class="glass-card p-3">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="brand-glow m-0">HISTORIAL</h6>
+                    <h6 class="navbar-brand">HISTORIAL</h6>
                     <button class="btn btn-sm btn-outline-danger border-0" onclick="limpiarLista()">Limpiar</button>
                 </div>
                 

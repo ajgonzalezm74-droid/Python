@@ -1,73 +1,123 @@
-/* CORRECCIÓN DE FUENTES */
-@import url('https://googleapis.com');
-
+/* ===== FONDO FUTURISTA ANIMADO ===== */
 body {
-    background-color: #050810;
-    padding-top: 80px; /* Para que el contenido no quede debajo de la navbar */
+  font-family: 'Inter', sans-serif;
+  /* El gradiente está bien, pero aseguremos que el texto sea claro */
+  background: radial-gradient(circle at 20% 30%, #26488d, #02040a) fixed; 
+  color: #ffffff; /* Blanco puro para máximo contraste */
+  overflow-x: hidden;
+  line-height: 1.6; /* Mejor espacio entre líneas */
 }
 
-/* NAVBAR BASE */
-.custom-navbar {
-    background-color: rgba(15, 23, 42, 0.85) !important;
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border-bottom: 1px solid rgba(0, 245, 255, 0.2);
+
+/* ===== NAV LINK FUTURISTA (AJG SOLUTION) ===== */
+
+.nav-link-glow {
+  position: relative;
+  font-weight: 600;
+  color: #cbdff2 !important;
+  padding: 10px 18px !important;
+  border-radius: 40px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(6px);
+  
 }
 
-.brand-glow {
-    color: #00f5ff;
-    text-shadow: 0 0 10px rgba(0, 245, 255, 0.7);
-    font-family: 'Orbitron', sans-serif;
+/* glow base */
+.nav-link-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 30px;
+  background: linear-gradient(120deg, transparent, rgba(59,130,246,0.4), transparent);
+  opacity: 0;
+  transition: 0.4s;
 }
 
-#menuPrincipal {
-    font-family: 'Orbitron', sans-serif;
-    color: white !important;
-    letter-spacing: 2px;
+/* borde neon */
+.nav-link-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 40px;
+  border: 1px solid rgba(59,130,246,0.3);
+  transition: 0.3s;
 }
 
-/* HIJOS (DROPDOWN) */
-.glass-dropdown {
-    background: rgba(10, 15, 30, 0.95) !important;
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 245, 255, 0.3) !important;
-    border-radius: 20px !important;
-    min-width: 220px;
-    padding: 15px 10px !important;
+/* hover efecto */
+.nav-link-glow:hover {
+  color: #ffffff !important;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 20px rgba(59,130,246,0.4);
 }
 
-.glass-dropdown .dropdown-item {
-    color: rgba(255, 255, 255, 0.8) !important;
-    transition: 0.3s;
+.nav-link-glow:hover::before {
+  opacity: 1;
 }
 
-.glass-dropdown .dropdown-item:hover {
-    background: rgba(0, 245, 255, 0.1) !important;
-    color: #00f5ff !important;
-    transform: translateX(8px);
+.nav-link-glow:hover::after {
+  border-color: #3b82f6;
+  box-shadow: 0 0 15px rgba(59,130,246,0.6);
 }
 
-/* BOTÓN CALCULADORA DENTRO DEL MENÚ */
-.btn-neon-glow {
-    background: #ffc107 !important;
-    color: black !important;
-    border-radius: 10px;
-    border: none;
+
+/* ===== TEXTO MARCA ===== */
+.brand-glow-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px; /* Cuadrado con esquinas suaves */
+    padding: 5px;
+    box-shadow: 0 0 15px rgba(96, 165, 250, 0.4); /* Resplandor azul suave */
+    transition: all 0.3s ease;
 }
 
-/* MÓVIL */
-@media (max-width: 991px) {
-    .navbar-collapse {
-        background: rgba(5, 8, 16, 0.98);
-        border-radius: 20px;
-        padding: 15px;
-        margin-top: 10px;
-        border: 1px solid rgba(0, 245, 255, 0.2);
-    }
-    
-    .glass-dropdown {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-    }
+.brand-logo-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.navbar-brand:hover .brand-glow-container {
+    box-shadow: 0 0 25px rgba(45, 212, 191, 0.6); /* Cambia de color al pasar el mouse */
+    transform: scale(1.1);
+}
+
+
+/*calculado roi*/
+.calc-input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #cbd5e6;
+}
+
+.calc-input-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 24px;
+    background: #0f3b72;
+    border: 1px solid #2563eb;
+    color: white;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+}
+
+.calc-input-group input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 6px rgba(37,99,235,0.5);
+}
+
+.calc-result {
+    background: rgba(12, 51, 112, 0.2);
+    border-radius: 28px;
+    padding: 1rem;
+    font-weight: 700;
+    font-family: monospace;
+    text-align: center;
+    font-size: 1.3rem;
 }

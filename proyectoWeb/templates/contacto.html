@@ -2,19 +2,83 @@
 
 {% extends "base.html" %}
 
-{% block title %}Inicio | AJG Solution{% endblock %}
+{% block title %}Contacto | AJG Solution{% endblock %}
 
 {% block content %}
-<section class="hero">
-    <div class="container text-center">
-        <h1>Contacto</h1>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+ 
+ 
+<section class="contact-section">
+  <div class="container">
+    <h2 class="section-title">Contacto</h2>
+    
+    <div class="contact-grid">
+      <!-- Información de contacto -->
+      <div class="contact-info">
+        <div class="info-item">
+          <span class="icon">📞</span>
+          <div>
+            <h3>Teléfono</h3>
+            <p>+58 424-1746099</p>
+          </div>
+        </div>
+        <div class="info-item">
+          <span class="icon">✉️</span>
+          <div>
+            <h3>Email</h3>
+            <p>ajgonzalezm74@gmail.com</p>
+          </div>
+        </div>
+        <div class="info-item">
+          <span class="icon">📍</span>
+          <div>
+            <h3>Ubicación</h3>
+            <p>Caracas, Venezuela</p>
+          </div>
+        </div>
+        <p class="helper-text">Envíanos tu requerimiento y te responderemos a la brevedad.</p>
+      </div>
 
+      <!-- Formulario -->
+     
 
-<p>Escríbenos a: ajgonzalezm80@gmail.com</p>
-<a href="/">Volver al inicio</a>
+      <!-- El Formulario Adaptado -->
+      <form id="form" class="styled-form">
+        <div class="form-group">
+          <input type="text" name="title" id="title" placeholder="Título" required>
+        </div>
+        
+        <div class="form-group">
+          <input type="text" name="name" id="name" placeholder="Nombre completo" required>
+        </div>
 
+        <div class="form-group">
+          <input type="email" name="email" id="email" placeholder="Correo electrónico" required>
+        </div>
 
+        <!--<div class="form-group">
+          <input type="text" name="time" id="time" placeholder="Hora de contacto">
+        </div>-->
+
+        <div class="form-group">
+          <!-- Cambié el input de message por textarea para que luzca mejor -->
+          <textarea name="message" id="message" rows="4" placeholder="Tu mensaje" required></textarea>
+        </div>
+
+        <button type="submit" id="button" class="btn-submit" value="Send Email">Send Email</button>
+      </form>
     </div>
+  </div>
 </section>
+
+<!-- Scripts de EmailJS -->
+<script type="text/javascript"
+  src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<script type="text/javascript">
+  emailjs.init('v9InKncsNGzYgShts')
+</script>
+
+</section>
+
+
 {% endblock %}
