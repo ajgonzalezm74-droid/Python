@@ -37,18 +37,19 @@ jobs:
           git config --global user.email "builder@github.com"
           git config --global user.name "GitHub Builder"
 
-      - name: Initialize and accept Android licenses
+      - name: Fix buildozer.spec permissions and config
         working-directory: kivy_de_tu_calculadora
         run: |
-          buildozer init
-          # Forzar aceptación de licencias de Android
-          yes | $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager --licenses || true
+          # Asegurar que android.accept_sdk_license = True está presente
+          if ! grep -q "android.accept_sdk_license = True" buildozer.spec; then
+            echo "Agregando android.accept_sdk_license = True al spec"
+            echo "android.accept_sdk_license = True" >> buildozer.spec
+          fi
 
       - name: Build APK
         working-directory: kivy_de_tu_calculadora
         run: |
-          # Forzar aceptación de licencias antes de construir
-          yes | $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager --licenses || true
+          # Construir directamente (sin init)
           buildozer android debug
 
       - name: Upload APK
