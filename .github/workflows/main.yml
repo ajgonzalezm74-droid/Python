@@ -12,12 +12,36 @@ jobs:
         id: get-date
         run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
-      - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v2  # Cambiado a v2
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          command: buildozer android debug
-          workdir: kivy_de_tu_calculadora
-          user: root  # Especificar usuario root que existe en el contenedor
+          python-version: '3.9'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git zip unzip openjdk-17-jdk \
+            autoconf libtool pkg-config zlib1g-dev \
+            libncurses5-dev libncursesw5-dev libtinfo5 \
+            cmake libffi-dev libssl-dev
+
+      - name: Install Buildozer and Cython
+        run: |
+          pip install --upgrade pip
+          pip install cython==0.29.33
+          pip install buildozer
+
+      - name: Configure Git (required by Buildozer)
+        run: |
+          git config --global user.email "builder@github.com"
+          git config --global user.name "GitHub Builder"
+
+      - name: Build APK
+        working-directory: kivy_de_tu_calculadora
+        run: |
+          buildozer init
+          buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
