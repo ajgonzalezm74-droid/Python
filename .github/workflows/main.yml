@@ -12,27 +12,41 @@ jobs:
         id: get-date
         run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
-      - name: Install system dependencies
+      - name: Install JDK
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            git zip unzip openjdk-17-jdk \
-            autoconf libtool pkg-config zlib1g-dev \
-            libncurses5-dev libncursesw5-dev libtinfo5 \
-            cmake libffi-dev libssl-dev
+          sudo apt-get install -y openjdk-17-jdk
+          echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
 
-      - name: Install Buildozer and Cython
+      - name: Install Android SDK dependencies
+        run: |
+          sudo apt-get install -y \
+            git \
+            zip \
+            unzip \
+            autoconf \
+            libtool \
+            pkg-config \
+            zlib1g-dev \
+            libncurses5-dev \
+            libncursesw5-dev \
+            libtinfo5 \
+            cmake \
+            libffi-dev \
+            libssl-dev
+
+      - name: Install Cython and Buildozer
         run: |
           pip install --upgrade pip
           pip install cython==0.29.33
           pip install buildozer
 
-      - name: Configure Git (required by Buildozer)
+      - name: Configure Git
         run: |
           git config --global user.email "builder@github.com"
           git config --global user.name "GitHub Builder"
@@ -40,7 +54,10 @@ jobs:
       - name: Build APK
         working-directory: kivy_de_tu_calculadora
         run: |
-          buildozer init
+          # Si ya existe buildozer.spec, no lo sobreescribas
+          if [ ! -f buildozer.spec ]; then
+            buildozer init
+          fi
           buildozer android debug
 
       - name: Upload APK
