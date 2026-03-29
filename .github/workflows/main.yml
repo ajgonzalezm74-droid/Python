@@ -18,7 +18,7 @@ jobs:
           key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
 
       - name: Build with Buildozer
-        uses: ArtemSerebrennkov/buildozer-action@v1
+        uses: ArtemSerebrennikov/buildozer-action@v1
         with:
           command: buildozer android debug
           repository_root: ./kivy_de_tu_calculadora
@@ -27,4 +27,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: calculadora-apk-${{ steps.get-date.outputs.date }}
-          path: bin/*.apk
+          path: kivy_de_tu_calculadora/bin/*.apk
+
