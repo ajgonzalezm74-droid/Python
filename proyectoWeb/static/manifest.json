@@ -1,17 +1,25 @@
+
+
 {
-  "name": "AJG Solution Calculadora",
-  "short_name": "AJG Calc",
-  "description": "Calculadora de tasas BCV y P2P en tiempo real",
+  "name": "Calculadora Financiera AJG",
+  "short_name": "AppCalc",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#212529",
-  "theme_color": "#ffc107",
+  "background_color": "#02074e",
+  "theme_color": "#02074e",
   "icons": [
     {
-      "src": "/static/img/icono_calculadora.png",
-      "sizes": "512x512",
+      "src": "/static/img/seguro.png", 
+      "sizes": "128x128",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/static/img/seguro.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ]
 }
+
+

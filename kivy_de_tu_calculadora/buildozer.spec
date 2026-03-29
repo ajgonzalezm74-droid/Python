@@ -87,7 +87,7 @@ fullscreen = 0
 android.permissions = INTERNET, ACCESS_NETWORK_STATE
 
 # (int) Target Android API, should be as high as possible.
-android.api = 30
+android.api = 33
 
 # (int) Minimum API your APK will support.
 android.minapi = 21
@@ -96,7 +96,7 @@ android.minapi = 21
 android.sdk = 30
 
 # (str) Android NDK version used for compilation
-android.ndk = 23b
+android.ndk = 25b
 
 # (str) Android NDK directory (if empty, it will be downloaded)
 # android.ndk_path =
@@ -139,7 +139,7 @@ android.ndk = 23b
 # android.copy_libs = 1
 
 # (str) The Android arch to build for, choices: armeabi-v7a, arm64-v8a, x86, x86_64
-android.arch = arm64-v8a
+android.archs = arm64-v8a
 
 # (bool) Turn on/off the armeabi-v7a arch
 # android.armeabi_v7a = True

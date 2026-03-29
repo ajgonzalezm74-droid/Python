@@ -1,4 +1,5 @@
  source /home/miequipo/Python/.venv/bin/activate
+
 kivy==2.3.0
 requests==2.31.0
-pyBCV==0.1.2
+pyBCV

@@ -599,3 +599,33 @@ button, .btn, [role="button"], .dropdown-item {
         box-shadow: var(--shadow-md);
     }
 }
+/* Estilo general para los inputs de fecha y el select */
+.form-control, .form-select {
+    background-color: #f8f9fa; /* Gris muy claro para que resalte del fondo blanco */
+    border: 2px solid #dee2e6;
+    color: #212529; /* Texto oscuro para legibilidad */
+    transition: all 0.3s ease;
+}
+
+/* Cuando el usuario hace clic o pasa el mouse */
+.form-control:focus, .form-select:focus {
+    background-color: #ffffff; /* Se vuelve blanco puro al escribir */
+    border-color: #0d6efd;     /* Borde azul de Bootstrap */
+    box-shadow: 0 0 8px rgba(13, 110, 253, 0.25);
+    color: #000;
+}
+
+/* Estilo específico para que el icono del calendario resalte */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 2px;
+    filter: invert(0.2); /* Oscurece un poco el icono para que se vea mejor */
+}
+
+/* Opcional: Si tu fondo general es oscuro, usa este en su lugar: */
+.dark-theme .form-control {
+    background-color: #2b3035;
+    color: #fff;
+    border-color: #495057;
+}
