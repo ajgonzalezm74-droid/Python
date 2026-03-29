@@ -3,7 +3,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-22.04 # Usamos una versión estable
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -15,17 +15,16 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .buildozer
-          key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
+          key: ${{ runner.os }}-buildozer-${{ hashFiles('kivy_de_tu_calculadora/buildozer.spec') }}
 
       - name: Build with Buildozer
-        uses: ArtemSerebrennikov/buildozer-action@v1
+        uses: ArtemSBulgakov/buildozer-action@v1
         with:
           command: buildozer android debug
-          repository_root: ./kivy_de_tu_calculadora
+          workdir: kivy_de_tu_calculadora
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: calculadora-apk-${{ steps.get-date.outputs.date }}
           path: kivy_de_tu_calculadora/bin/*.apk
-
