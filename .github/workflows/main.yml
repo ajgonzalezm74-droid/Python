@@ -17,28 +17,14 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install JDK
+      - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk
-          echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
-
-      - name: Install Android SDK dependencies
-        run: |
           sudo apt-get install -y \
-            git \
-            zip \
-            unzip \
-            autoconf \
-            libtool \
-            pkg-config \
-            zlib1g-dev \
-            libncurses5-dev \
-            libncursesw5-dev \
-            libtinfo5 \
-            cmake \
-            libffi-dev \
-            libssl-dev
+            git zip unzip openjdk-17-jdk \
+            autoconf libtool pkg-config zlib1g-dev \
+            libncurses5-dev libncursesw5-dev libtinfo5 \
+            cmake libffi-dev libssl-dev
 
       - name: Install Cython and Buildozer
         run: |
@@ -51,13 +37,18 @@ jobs:
           git config --global user.email "builder@github.com"
           git config --global user.name "GitHub Builder"
 
+      - name: Initialize and accept Android licenses
+        working-directory: kivy_de_tu_calculadora
+        run: |
+          buildozer init
+          # Forzar aceptación de licencias de Android
+          yes | $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager --licenses || true
+
       - name: Build APK
         working-directory: kivy_de_tu_calculadora
         run: |
-          # Si ya existe buildozer.spec, no lo sobreescribas
-          if [ ! -f buildozer.spec ]; then
-            buildozer init
-          fi
+          # Forzar aceptación de licencias antes de construir
+          yes | $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager --licenses || true
           buildozer android debug
 
       - name: Upload APK
