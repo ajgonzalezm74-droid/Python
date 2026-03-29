@@ -17,39 +17,36 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install system dependencies
+      - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            git zip unzip openjdk-17-jdk \
-            autoconf libtool pkg-config zlib1g-dev \
-            libncurses5-dev libncursesw5-dev libtinfo5 \
-            cmake libffi-dev libssl-dev
-
-      - name: Install Cython and Buildozer
-        run: |
-          pip install --upgrade pip
-          pip install cython==0.29.33
-          pip install buildozer
+          sudo apt-get install -y git zip unzip openjdk-17-jdk \
+            autoconf libtool pkg-config zlib1g-dev libncurses5-dev \
+            libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+          pip install cython==0.29.33 buildozer
 
       - name: Configure Git
         run: |
           git config --global user.email "builder@github.com"
           git config --global user.name "GitHub Builder"
 
-      - name: Fix buildozer.spec permissions and config
+      - name: Configure buildozer.spec
         working-directory: kivy_de_tu_calculadora
         run: |
-          # Asegurar que android.accept_sdk_license = True está presente
-          if ! grep -q "android.accept_sdk_license = True" buildozer.spec; then
-            echo "Agregando android.accept_sdk_license = True al spec"
+          # Forzar aceptación de licencias en el spec existente
+          sed -i 's/android.accept_sdk_license = .*/android.accept_sdk_license = True/' buildozer.spec
+          # Si la línea no existe, la agregamos
+          if ! grep -q "android.accept_sdk_license" buildozer.spec; then
             echo "android.accept_sdk_license = True" >> buildozer.spec
           fi
+          
+          # Mostrar configuración para debug
+          echo "=== Configuración de android en buildozer.spec ==="
+          grep "android\." buildozer.spec
 
       - name: Build APK
         working-directory: kivy_de_tu_calculadora
         run: |
-          # Construir directamente (sin init)
           buildozer android debug
 
       - name: Upload APK
