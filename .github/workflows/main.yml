@@ -5,23 +5,18 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4  # Primero descargamos el código
 
       - name: Get Date
         id: get-date
         run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
-      - name: Cache Buildozer
-        uses: actions/cache@v4
-        with:
-          path: .buildozer
-          key: ${{ runner.os }}-buildozer-${{ hashFiles('kivy_de_tu_calculadora/buildozer.spec') }}
-
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
         with:
           command: buildozer android debug
-          workdir: kivy_de_tu_calculadora
+          workdir: kivy_de_tu_calculadora  # Entra a la carpeta donde está el .spec
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
