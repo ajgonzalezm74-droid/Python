@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Calculadora de Divisas | AJG{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-8">
+            
+            <!-- TARJETA PRINCIPAL GLASS -->
+            <div class="glass-card p-4 shadow-2xl mb-4">
+                <div class="text-center mb-4">
+                    
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bank2" viewBox="0 0 16 16">
+                    <path d="M8.277.084a.5.5 0 0 0-.554 0l-7.5 5A.5.5 0 0 0 .5 6h1.875v7H1.5a.5.5 0 0 0 0 1h13a.5.5 0 1 0 0-1h-.875V6H15.5a.5.5 0 0 0 .277-.916zM12.375 6v7h-1.25V6zm-2.5 0v7h-1.25V6zm-2.5 0v7h-1.25V6zm-2.5 0v7h-1.25V6zM8 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2M.5 15a.5.5 0 0 0 0 1h15a.5.5 0 1 0 0-1z"/>
+                    </svg>
+                    <strong class="me-auto d-block mb-1 text-primary">Conversión de Divisas en Tiempo Real</strong>
+                </div>
+
+                <!-- MINI DASHBOARD DE TASAS (Simplificado) -->
+                <div class="d-flex justify-content-between text-center mb-4 p-3 rounded-4 bg-black-20">
+                    <div class="tasa-item">
+                        <span class="d-block text-cyan-glow small">BCV USD</span>
+                        <strong id="bcv_usd" class="fs-5">{{ tasas.bcv_usd }}</strong>
+                    </div>
+                    <div class="tasa-item border-start border-end border-secondary px-3">
+                        <span class="d-block text-cyan-glow small">BCV EUR</span>
+                        <strong id="bcv_eur" class="fs-5">{{ tasas.bcv_eur }}</strong>
+                    </div>
+                    <div class="tasa-item">
+                        <span class="d-block text-warning small">P2P</span>
+                        <strong class="fs-5">
+                            <span id="p2p_arrow"></span>
+                            <span id="binance_usdt_ves">{{ tasas.p2p_ves }}</span>
+                        </strong>
+                    </div>
+                </div>
+
+                <!-- CONTROLES -->
+                <div class="form-group mb-4">
+                    <label class="label-tech">Referencia</label>
+                    <select id="tipoTasa" class="form-select input-tech" onchange="convertir()">
+                        <option value="{{ tasas.bcv_usd }}">Dólar BCV ({{ tasas.bcv_usd }})</option>
+                        <option value="{{ tasas.bcv_eur }}">Euro BCV ({{ tasas.bcv_eur }})</option>
+                        <option value="{{ tasas.p2p_ves }}">Binance P2P ({{ tasas.p2p_ves }})</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label class="label-tech">Monto a Convertir</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0 text-cyan-glow">$ / €</span>
+                        <input type="number" id="monto_ext" class="form-control form-control-lg text-white" placeholder="0.00" oninput="convertir()">
+                    </div>
+                </div>
+
+                <!-- RESULTADO DESTACADO -->
+                 
+                <div class="result-box mb-4">
+                    <!--<span class="small mb-1">Total en Bolívares (VES)</span>-->
+                    <strong class="me-auto d-block mb-1 text-center">Total en Bolívares (VES)</strong>
+                    <input type="text" id="resultado_ves" class="result-input" readonly placeholder="0,00">
+                </div>
+
+
+                <div class="d-grid gap-2  mx-auto">
+                    <button class="btn btn-primary type="button"" onclick="agregarCalculo()">
+                        + AGREGAR A LA LISTA
+                    </button>
+                </div>    
+
+               
+            </div>
+
+            <!-- HISTORIAL (Simplificado) -->
+            <div class="glass-card p-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="navbar-brand">HISTORIAL</h6>
+                    <button class="btn btn-sm btn-outline-danger border-0" onclick="limpiarLista()">Limpiar</button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-dark table-borderless align-middle m-0 small">
+                        <tbody id="lista_calculos">
+                            <!-- Los items se agregan aquí dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/convertir.js') }}"></script>
+<script src="{{ url_for('static', filename='js/calculadora.js') }}"></script>
+<script src="{{ url_for('static', filename='js/actualizar_tasas.js') }}"></script>
+{% endblock %}

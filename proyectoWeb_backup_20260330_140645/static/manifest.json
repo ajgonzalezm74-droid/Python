@@ -1,0 +1,25 @@
+
+
+{
+  "name": "Calculadora Financiera AJG",
+  "short_name": "AppCalc",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#02074e",
+  "theme_color": "#02074e",
+  "icons": [
+    {
+      "src": "/static/img/seguro.png", 
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/img/seguro.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+
+
