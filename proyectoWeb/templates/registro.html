@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Registro | AJG Solution{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white text-center py-3">
+                    <h4 class="mb-0">📝 Crear Cuenta</h4>
+                </div>
+                <div class="card-body p-4">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <form method="POST" action="{{ url_for('auth.registro') }}" id="registroForm">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">👤 Nombre de Usuario</label>
+                            <input type="text" class="form-control form-control-lg" id="username" name="username" 
+                                   placeholder="usuario123" required minlength="3">
+                            <div id="usernameFeedback" class="invalid-feedback"></div>
+                            <small class="text-muted">Mínimo 3 caracteres</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">📧 Correo Electrónico</label>
+                            <input type="email" class="form-control form-control-lg" id="email" name="email" 
+                                   placeholder="usuario@ejemplo.com" required>
+                            <div id="emailFeedback" class="invalid-feedback"></div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="telefono" class="form-label">📱 Teléfono (Opcional)</label>
+                            <input type="tel" class="form-control form-control-lg" id="telefono" name="telefono" 
+                                   placeholder="04121234567">
+                            <small class="text-muted">Formato: 0412-1234567 o 04121234567</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">🔒 Contraseña</label>
+                            <input type="password" class="form-control form-control-lg" id="password" name="password" 
+                                   placeholder="••••••" required minlength="6">
+                            <div id="passwordFeedback" class="invalid-feedback"></div>
+                            <small class="text-muted">Mínimo 6 caracteres</small>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="confirm_password" class="form-label">✓ Confirmar Contraseña</label>
+                            <input type="password" class="form-control form-control-lg" id="confirm_password" name="confirm_password" 
+                                   placeholder="••••••" required>
+                            <div id="confirmFeedback" class="invalid-feedback"></div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg" id="btnRegistro">
+                                <i class="bi bi-person-plus"></i> Registrarse
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="text-center">
+                        <p class="mb-0">¿Ya tienes cuenta? <a href="{{ url_for('auth.login') }}" class="text-success">Inicia Sesión</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Validación en tiempo real
+document.getElementById('username').addEventListener('blur', async function() {
+    const username = this.value;
+    if (username.length < 3) return;
+    
+    try {
+        const response = await fetch('/api/verificar-usuario', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username: username})
+        });
+        const data = await response.json();
+        
+        if (!data.valido) {
+            this.classList.add('is-invalid');
+            document.getElementById('usernameFeedback').textContent = data.mensaje;
+        } else {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
+
+document.getElementById('email').addEventListener('blur', async function() {
+    const email = this.value;
+    if (!email.includes('@')) return;
+    
+    try {
+        const response = await fetch('/api/verificar-email', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({email: email})
+        });
+        const data = await response.json();
+        
+        if (!data.valido) {
+            this.classList.add('is-invalid');
+            document.getElementById('emailFeedback').textContent = data.mensaje;
+        } else {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
+
+// Validar confirmación de contraseña
+document.getElementById('confirm_password').addEventListener('input', function() {
+    const password = document.getElementById('password').value;
+    const confirm = this.value;
+    
+    if (password !== confirm) {
+        this.classList.add('is-invalid');
+        document.getElementById('confirmFeedback').textContent = 'Las contraseñas no coinciden';
+    } else {
+        this.classList.remove('is-invalid');
+        this.classList.add('is-valid');
+    }
+});
+
+// Validar teléfono
+document.getElementById('telefono').addEventListener('input', function() {
+    const telefono = this.value;
+    const patron = /^(\+?58|0)?(4\d{2})-?\d{7}$/;
+    
+    if (telefono && !patron.test(telefono)) {
+        this.classList.add('is-invalid');
+    } else {
+        this.classList.remove('is-invalid');
+        if (telefono) this.classList.add('is-valid');
+    }
+});
+</script>
+
+<style>
+    @media (max-width: 768px) {
+        .card {
+            margin: 0 10px;
+        }
+        
+        .form-control-lg {
+            font-size: 16px;
+        }
+        
+        .btn-lg {
+            padding: 12px;
+        }
+    }
+    
+    .form-control.is-valid {
+        border-color: #198754;
+        background-image: url("data:image/svg+xml,...");
+    }
+    
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+</style>
+{% endblock %}
