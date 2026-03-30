@@ -42,11 +42,13 @@ app.register_blueprint(views)
 app.register_blueprint(auth)
 
 # Service worker
+
 @app.route('/sw.js')
 def serve_sw():
     return send_from_directory(
         os.path.join(app.root_path, 'static', 'js'),
-        'sw.js'
+        'sw.js',
+        mimetype='application/javascript'
     )
 
 if __name__ == "__main__":

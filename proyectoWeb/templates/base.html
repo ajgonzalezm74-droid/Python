@@ -8,7 +8,13 @@
     <!-- PWA Config -->
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <meta name="theme-color" content="#02074e">
-    <link rel="icon" type="image/png" sizes="128x128" href="{{ url_for('static', filename='img/seguro.png') }}">
+    <!-- En base.html, dentro de <head> -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AJG App">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/seguro_192.png') }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ url_for('static', filename='img/seguro_152.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/seguro_192.png') }}">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -209,6 +215,66 @@
     }
 }
 </style>
+<script>
+// Detectar si la app ya está instalada
+let deferredPrompt;
+let isInstalled = window.matchMedia('(display-mode: standalone)').matches;
+
+// Si no está instalada, mostrar opción
+if (!isInstalled) {
+    // Escuchar evento de instalación
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Crear botón de instalación flotante
+        const installBtn = document.createElement('div');
+        installBtn.innerHTML = `
+            <div style="position: fixed; bottom: 20px; right: 20px; z-index: 10000;">
+                <button id="installPwaBtn" style="
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 50px;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                    cursor: pointer;
+                    font-weight: bold;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    animation: pulse 2s infinite;
+                ">
+                    📱 Instalar App
+                </button>
+            </div>
+        `;
+        document.body.appendChild(installBtn);
+        
+        document.getElementById('installPwaBtn').addEventListener('click', () => {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('Usuario instaló la app');
+                    installBtn.remove();
+                }
+                deferredPrompt = null;
+            });
+        });
+    });
+}
+
+// Animación de pulso
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+`;
+document.head.appendChild(style);
+</script>
 
 </body>
 </html>
