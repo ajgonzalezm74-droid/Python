@@ -1,4 +1,5 @@
 Flask==3.1.2
+flask-login
 Flask-SQLAlchemy==3.1.1
 SQLAlchemy==2.0.47
 python-dotenv==1.2.2
