@@ -1,71 +1,24 @@
 {
-  "name": "Calculadora Financiera AJG",
+  "name": "AJG Solution",
   "short_name": "AJG App",
-  "description": "Calculadora financiera y gestión de gastos personales",
+  "description": "Calculadora financiera y gestión de gastos",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#02074e",
   "theme_color": "#02074e",
-  "scope": "/",
-  "lang": "es",
-  "categories": ["finance", "business", "productivity"],
   "icons": [
     {
-      "src": "/static/img/seguro_72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/static/img/seguro_96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/static/img/seguro_128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/static/img/seguro_144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/static/img/seguro_152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/static/img/seguro_192.png",
+      "src": "static/img/seguro_192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/static/img/seguro_384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/static/img/seguro_512.png",
+      "src": "static/img/seguro_512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "/static/img/screenshot1.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "platform": "android"
     }
   ]
 }

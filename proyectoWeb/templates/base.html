@@ -275,6 +275,41 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 </script>
-
+<script>
+// Registro automático del Service Worker
+(function() {
+    if ('serviceWorker' in navigator) {
+        // Esperar a que la página cargue completamente
+        window.addEventListener('load', function() {
+            // Registrar el Service Worker
+            navigator.serviceWorker.register('/sw.js')
+                .then(function(registration) {
+                    console.log('✅ Service Worker registrado exitosamente');
+                    
+                    // Verificar si hay actualizaciones
+                    registration.update();
+                    
+                    // Escuchar cambios
+                    registration.addEventListener('updatefound', function() {
+                        console.log('🔄 Actualización encontrada');
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', function() {
+                            if (newWorker.state === 'activated') {
+                                console.log('✅ Nuevo Service Worker activado');
+                                // Opcional: recargar para usar nueva versión
+                                // window.location.reload();
+                            }
+                        });
+                    });
+                })
+                .catch(function(error) {
+                    console.log('❌ Error al registrar Service Worker:', error);
+                });
+        });
+    } else {
+        console.log('⚠️ Service Worker no soportado en este navegador');
+    }
+})();
+</script>
 </body>
 </html>
