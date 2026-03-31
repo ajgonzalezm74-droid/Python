@@ -169,13 +169,14 @@
                         <h6 class="mb-0" id="balance-neto">Bs. 0</h6>
                     </div>
                     
+                   <!-- Botón que abre la página de gráficos en nueva pestaña -->
                     <div class="d-flex gap-2 mt-3">
                         <button class="btn btn-sm btn-outline-light flex-grow-1 py-1" id="btnExportarExcel">
                             📊 Excel
                         </button>
-                        <button class="btn btn-sm btn-outline-light flex-grow-1 py-1" data-bs-toggle="modal" data-bs-target="#modalGrafico" id="btnVerGrafico">
-                            📈 Gráfico
-                        </button>
+                        <a href="{{ url_for('views.graficos') }}" target="_blank" class="btn btn-sm btn-outline-light flex-grow-1 py-1 text-center text-decoration-none">
+                            📈 Ver Gráficos
+                        </a>
                     </div>
                 </div>
             </div>
@@ -205,6 +206,7 @@
             <div class="modal-footer py-2">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 <button type="button" class="btn btn-sm btn-primary" id="btnExportarPDF">📄 Exportar PDF</button>
+                
             </div>
         </div>
     </div>

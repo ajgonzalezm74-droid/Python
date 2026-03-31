@@ -1,15 +1,17 @@
-/* static/css/calculadora_contable.css - Versión optimizada */
+/* static/css/calculadora_contable.css - Versión con mejor contraste */
+
 .calculadora-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #0c192c;
     min-height: 100vh;
     padding: 15px 0;
 }
 
-/* Tarjeta de tasa - más compacta */
+/* Tarjeta de tasa */
 .card-tasa {
-    background: linear-gradient(135deg, #1a1c2c 0%, #2d2f42 100%);
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     border: none;
     border-radius: 12px;
+    color: rgb(71, 63, 63);
 }
 
 .card-tasa .card-body {
@@ -19,66 +21,108 @@
 .card-tasa h5 {
     font-size: 0.9rem;
     margin-bottom: 8px;
+    color: rgb(124, 123, 123);
 }
 
-/* Tarjetas generales */
+.card-tasa select {
+    background: rgb(206, 204, 204);
+    color: #333;
+    border: none;
+}
+
+/* Tarjetas generales - fondo claro */
 .card {
     border-radius: 12px;
     border: none;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    background: rgb(78, 31, 31);
 }
 
 .card-header {
     background: #f8f9fa;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #e9ecef;
     padding: 10px 12px;
 }
 
 .card-header h4, .card-header h6 {
     margin: 0;
     font-size: 1rem;
+    color: #333;
 }
 
-/* Formulario compacto */
+/* Formulario - texto oscuro sobre fondo claro */
 .form-control, .form-select {
     font-size: 0.85rem;
-    padding: 6px 10px;
+    padding: 8px 12px;
     border-radius: 8px;
+    border: 1px solid #ddd;
+    background: white;
+    color: #333;
 }
 
 .form-control:focus, .form-select:focus {
-    box-shadow: 0 0 0 2px rgba(102,126,234,0.25);
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102,126,234,0.2);
+    outline: none;
+}
+
+.form-control::placeholder {
+    color: #999;
 }
 
 /* Botones */
 .btn {
     font-size: 0.8rem;
-    padding: 5px 10px;
+    padding: 6px 12px;
     border-radius: 8px;
+    font-weight: 500;
 }
 
 .btn-success {
     background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
     border: none;
+    color: white;
 }
 
-.btn-sm {
-    padding: 4px 8px;
-    font-size: 0.75rem;
+.btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(40,167,69,0.3);
 }
 
-/* Lista de movimientos - scroll suave */
+.btn-secondary {
+    background: #6c757d;
+    border: none;
+    color: white;
+}
+
+.btn-outline-secondary {
+    border: 1px solid #6c757d;
+    color: #6c757d;
+    background: white;
+}
+
+.btn-outline-secondary:hover {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-outline-secondary.active {
+    background: #667eea;
+    border-color: #667eea;
+    color: white;
+}
+
+/* Lista de movimientos */
 #lista-items {
     max-height: 350px;
     overflow-y: auto;
-    scroll-behavior: smooth;
 }
 
 .list-group-item {
-    padding: 8px 10px;
+    padding: 10px 12px;
     border: none;
-    border-bottom: 1px solid #eee;
-    transition: background 0.2s;
+    border-bottom: 1px solid #f0f0f0;
+    background: white;
 }
 
 .list-group-item:hover {
@@ -88,41 +132,54 @@
 /* Badges */
 .badge {
     font-weight: normal;
-    padding: 3px 8px;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.badge.bg-success {
+    background: #28a745 !important;
+    color: white;
+}
+
+.badge.bg-danger {
+    background: #dc3545 !important;
+    color: white;
+}
+
+.badge.bg-secondary {
+    background: #6c757d !important;
+    color: white;
 }
 
 /* Card resumen */
 .card-resumen {
-    background: linear-gradient(135deg, #1a1c2c 0%, #2d2f42 100%);
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     color: white;
 }
 
-.card-resumen h5, .card-resumen h4 {
-    font-size: 1.2rem;
+.card-resumen h4, .card-resumen h3, .card-resumen h6 {
+    color: white;
 }
 
 .card-resumen small {
-    font-size: 0.7rem;
-    opacity: 0.8;
+    color: rgba(255,255,255,0.7);
 }
 
-/* Modal */
-.modal-content {
-    border-radius: 16px;
+.card-resumen .text-success {
+    color: #90ee90 !important;
 }
 
-.modal-header {
-    border-radius: 16px 16px 0 0;
+.card-resumen .text-danger {
+    color: #ffaaaa !important;
 }
 
-/* Animaciones suaves */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+/* Tips */
+.bg-light {
+    background: #e9ecef !important;
 }
 
-.list-group-item {
-    animation: fadeIn 0.2s ease-out;
+.text-muted {
+    color: #6c757d !important;
 }
 
 /* Responsive */
@@ -137,17 +194,5 @@
     
     .form-control, .form-select {
         font-size: 16px; /* Evita zoom en iOS */
-    }
-    
-    #lista-items {
-        max-height: 300px;
-    }
-}
-
-/* Optimización para dispositivos lentos */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation: none !important;
-        transition: none !important;
     }
 }
