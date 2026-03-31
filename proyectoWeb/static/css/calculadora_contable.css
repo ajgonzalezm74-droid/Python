@@ -1,0 +1,153 @@
+/* static/css/calculadora_contable.css - Versión optimizada */
+.calculadora-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 15px 0;
+}
+
+/* Tarjeta de tasa - más compacta */
+.card-tasa {
+    background: linear-gradient(135deg, #1a1c2c 0%, #2d2f42 100%);
+    border: none;
+    border-radius: 12px;
+}
+
+.card-tasa .card-body {
+    padding: 12px 15px;
+}
+
+.card-tasa h5 {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+/* Tarjetas generales */
+.card {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
+    padding: 10px 12px;
+}
+
+.card-header h4, .card-header h6 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* Formulario compacto */
+.form-control, .form-select {
+    font-size: 0.85rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 2px rgba(102,126,234,0.25);
+}
+
+/* Botones */
+.btn {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    border-radius: 8px;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+}
+
+.btn-sm {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+}
+
+/* Lista de movimientos - scroll suave */
+#lista-items {
+    max-height: 350px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+.list-group-item {
+    padding: 8px 10px;
+    border: none;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s;
+}
+
+.list-group-item:hover {
+    background: #f8f9fa;
+}
+
+/* Badges */
+.badge {
+    font-weight: normal;
+    padding: 3px 8px;
+}
+
+/* Card resumen */
+.card-resumen {
+    background: linear-gradient(135deg, #1a1c2c 0%, #2d2f42 100%);
+    color: white;
+}
+
+.card-resumen h5, .card-resumen h4 {
+    font-size: 1.2rem;
+}
+
+.card-resumen small {
+    font-size: 0.7rem;
+    opacity: 0.8;
+}
+
+/* Modal */
+.modal-content {
+    border-radius: 16px;
+}
+
+.modal-header {
+    border-radius: 16px 16px 0 0;
+}
+
+/* Animaciones suaves */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.list-group-item {
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .calculadora-section {
+        padding: 10px 0;
+    }
+    
+    .card-body {
+        padding: 12px;
+    }
+    
+    .form-control, .form-select {
+        font-size: 16px; /* Evita zoom en iOS */
+    }
+    
+    #lista-items {
+        max-height: 300px;
+    }
+}
+
+/* Optimización para dispositivos lentos */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
