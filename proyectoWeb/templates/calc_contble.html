@@ -2,124 +2,217 @@
 
 {% block title %}Calculadora Contable | AJG Solution{% endblock %}
 
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/calculadora.css') }}">
+{% endblock %}
+
 {% block content %}
 
-<section class="hero">
-    <script async="" src="/assets/js/application.js"></script>
-    <script async="" src="/assets/js/vendor/bootstrap.bundle.min.js"></script>
-    
-    
+<section class="calculadora-section">
 <div class="container mt-4">
-    <div class="row">
-        <!-- PANEL A: ENTRADA Y LISTADO -->
-        <div class="col-md-6 border-end">
-            <h4 >📝 Registro de Movimientos</h4>
-            
-            <!-- Formulario con method POST -->
-            <form id="item-form" method="POST" action="{{ url_for('views.calculadora_contable') }}" class="mb-3">
-                <input type="hidden" name="tasa_referencia" id="tasa_referencia" value="">
-                <input type="hidden" name="tasa_tipo" id="tasa_tipo" value="">
-                
-                <div class="input-group">
-                    <input type="text" id="nombre" name="nombre_item" class="form-control" 
-                           placeholder="Ej: Alquiler" required>
-                    <input type="number" id="monto_bs" name="precio_bs" class="form-control" 
-                           placeholder="Monto Bs." step="0.01" required>
-                    <select id="tipo" name="tipo" class="form-select">
-                        <option value="ingreso">Ingreso (+)</option>
-                        <option value="gasto">Gasto (-)</option>
+    <!-- TASA DE REFERENCIA - ARRIBA -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card card-tasa">
+                <div class="card-body">
+                    <h5 class="card-title text-white mb-3">💱 Tasa de Referencia</h5>
+                    <select id="tasa-selector" class="form-select w-auto" style="max-width: 300px; background: rgba(255,255,255,0.9);">
+                        {% if tasas %}
+                            {% for key, value in tasas.items() %}
+                                <option value="{{ value }}" {% if loop.first %}selected{% endif %}>
+                                    {{ key|upper }}: {{ "%.2f"|format(value) }} Bs/USD
+                                </option>
+                            {% endfor %}
+                        {% else %}
+                            <option value="">No hay tasas disponibles</option>
+                        {% endif %}
                     </select>
-                    <button class="btn btn-success" type="submit">Añadir</button>
                 </div>
-            </form>
-            
-            <!-- Listado de items desde la base de datos -->
-            <div id="lista-items" class="list-group shadow-sm" style="max-height: 400px; overflow-y: auto;">
-                {% if items %}
-                    {% for item in items %}
-                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>{{ item.nombre_item }}</strong>
-                            <small class="text-muted ms-2">{{ item.fecha.strftime('%d/%m/%Y %H:%M') }}</small>
-                            {% if item.tasa_usd %}
-                            <small class="text-muted d-block">
-                                <span class="badge bg-secondary">Tasa: {{ item.tasa_tipo or 'N/A' }}</span>
-                                {{ "%.2f"|format(item.tasa_usd) }} Bs/USD
-                            </small>
-                            {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- PANEL A: REGISTRO DE MOVIMIENTOS -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">📝 Registro de Movimientos</h4>
+                </div>
+                <div class="card-body">
+                    <form id="item-form" method="POST" action="{{ url_for('views.calculadora_contable') }}">
+                        <input type="hidden" name="tasa_referencia" id="tasa_referencia" value="">
+                        <input type="hidden" name="tasa_tipo" id="tasa_tipo" value="">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">📌 Movimiento:</label>
+                            <input type="text" name="nombre_item" class="form-control" 
+                                   placeholder="Ej: Alquiler, Venta, Compra..." required>
                         </div>
-                        <div>
-                            <span class="badge bg-{{ 'success' if item.precio_bs >= 0 else 'danger' }} rounded-pill">
-                                Bs. {{ "%.2f"|format(item.precio_bs) }}
-                            </span>
-                            {% if item.tasa_usd %}
-                            <span class="badge bg-info rounded-pill ms-1">
-                                ${{ "%.2f"|format(item.precio_bs / item.tasa_usd) }}
-                            </span>
-                            {% endif %}
-                            <button class="btn btn-sm btn-outline-danger btn-eliminar" data-id="{{ item.id }}">
-                                🗑️
+                        
+                        <div class="mb-3">
+                            <label class="form-label">💰 Monto (Bs.):</label>
+                            <input type="number" name="precio_bs" class="form-control" 
+                                   placeholder="0.00" step="0.01" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">📊 Tipo:</label>
+                            <select name="tipo" class="form-select">
+                                <option value="ingreso">💰 Ingreso (+)</option>
+                                <option value="gasto">💸 Gasto (-)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">🏷️ Categoría:</label>
+                            <select name="categoria" class="form-select">
+                                <option value="">-- Seleccionar --</option>
+                                <option value="comida">🍔 Comida</option>
+                                <option value="transporte">🚗 Transporte</option>
+                                <option value="servicios">💡 Servicios</option>
+                                <option value="alquiler">🏠 Alquiler</option>
+                                <option value="entretenimiento">🎬 Entretenimiento</option>
+                                <option value="salud">🏥 Salud</option>
+                                <option value="educacion">📚 Educación</option>
+                                <option value="otros">📦 Otros</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">📝 Notas:</label>
+                            <textarea name="notas" class="form-control" rows="2" 
+                                      placeholder="Notas adicionales..."></textarea>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success flex-grow-1" id="btnGuardar">
+                                💾 Guardar Movimiento
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="btnLimpiar">
+                                🧹 Limpiar Formulario
                             </button>
                         </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- FILTROS POR PERÍODO -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">🔍 Consultar por período</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="btn btn-outline-primary btn-filtro filtro-periodo" data-periodo="dia">📅 Hoy</button>
+                        <button type="button" class="btn btn-outline-primary btn-filtro filtro-periodo" data-periodo="semana">📆 Esta Semana</button>
+                        <button type="button" class="btn btn-outline-primary btn-filtro filtro-periodo" data-periodo="mes">📅 Este Mes</button>
+                        <button type="button" class="btn btn-outline-primary btn-filtro filtro-periodo" data-periodo="todo">📊 Todos</button>
                     </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="list-group-item text-center text-muted">
-                        No hay movimientos registrados
+                </div>
+            </div>
+            
+            <!-- LISTADO DE MOVIMIENTOS -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">📋 Lista de Movimientos</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div id="lista-items" class="lista-items">
+                        {% if items %}
+                            {% for item in items %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <div>
+                                            <strong>{{ item.nombre_item }}</strong>
+                                            {% if item.categoria %}
+                                            <span class="badge bg-secondary badge-categoria">{{ item.categoria }}</span>
+                                            {% endif %}
+                                            <small class="text-muted ms-2">{{ item.fecha.strftime('%d/%m/%Y %H:%M') }}</small>
+                                        </div>
+                                        <div class="mt-1">
+                                            <span class="badge badge-monto {{ 'badge-ingreso' if item.precio_bs >= 0 else 'badge-gasto' }}">
+                                                {% if item.precio_bs >= 0 %}💰{% else %}💸{% endif %}
+                                                Bs. {{ "%.2f"|format(item.precio_bs) }}
+                                            </span>
+                                            {% if item.tasa_usd %}
+                                            <span class="badge badge-usd ms-1">
+                                                ${{ "%.2f"|format(item.precio_bs / item.tasa_usd) }}
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                        {% if item.notas %}
+                                        <div class="small text-muted mt-1">{{ item.notas }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-danger btn-eliminar" data-id="{{ item.id }}">
+                                        🗑️
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="list-group-item text-center text-muted">
+                                No hay movimientos registrados
+                            </div>
+                        {% endif %}
                     </div>
-                {% endif %}
+                </div>
             </div>
         </div>
 
-        <!-- PANEL B: ANÁLISIS Y TOTALES -->
-        <div class="col-md-6 bg-dark text-white rounded">
-            <h4> <img src="static/img/clipboard-data.svg" alt="Resumen Financiero">Resumen Financiero (USD)</h4>
-            <div class="mb-4">
-                <label class="carbon-wordwrap">Tasa de Referencia:</label>
-                <select id="tasa-selector" class="form-select border-primary">
-                    {% if tasas %}
-                        {% for key, value in tasas.items() %}
-                            <option value="{{ value }}" {% if loop.first %}selected{% endif %}>
-                                {{ key|upper }}: {{ "%.2f"|format(value) }} Bs/USD
-                            </option>
-                        {% endfor %}
-                    {% else %}
-                        <option value="">No hay tasas disponibles</option>
-                    {% endif %}
-                </select>
+        <!-- PANEL B: RESUMEN FINANCIERO -->
+        <div class="col-md-6">
+            <!-- GRÁFICO DE TORTA -->
+            <div class="grafico-container mb-4">
+                <h5 class="mb-3">📊 Distribución de Gastos</h5>
+                <canvas id="graficoGastos" width="400" height="400" style="max-width: 100%; height: auto;"></canvas>
             </div>
-
-            <div class="results-box" style="font-family: 'Courier New', monospace;">
-                <p>💰 Total Ingresos: <span id="total-inc" class="text-success fw-bold">$0.00</span></p>
-                <p>💸 Total Gastos: <span id="total-exp" class="text-danger fw-bold">$0.00</span></p>
-                <hr>
-                <h3 class="fw-bold">✅ Restante: <span id="leftover" class="text-primary">$0.00</span></h3>
+            
+            <!-- RESUMEN EN USD -->
+            <div class="card card-resumen">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">📊 Resumen Financiero</h5>
+                    <div class="row text-center mb-4">
+                        <div class="col-6">
+                            <h6>💰 Total Ingresos</h6>
+                            <h3 class="total-ingresos" id="total-inc">$0.00</h3>
+                        </div>
+                        <div class="col-6">
+                            <h6>💸 Total Gastos</h6>
+                            <h3 class="total-gastos" id="total-exp">$0.00</h3>
+                        </div>
+                    </div>
+                    <hr class="bg-white">
+                    <div class="text-center mb-4">
+                        <h5>✅ Restante</h5>
+                        <h2 class="fw-bold" id="leftover">$0.00</h2>
+                    </div>
+                    
+                    <!-- Botones de exportación -->
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-exportar flex-grow-1" id="btnExportarPDF">
+                            📄 Exportar PDF
+                        </button>
+                        <button class="btn btn-exportar flex-grow-1" id="btnExportarExcel">
+                            📊 Exportar Excel
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 </section>
 
-<script src="{{ url_for('static', filename='js/calcular_totales.js') }}"></script>
+<!-- Incluir librerías -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-<style>
-.badge.bg-info {
-    background-color: #1a1c1d !important;
-    font-size: 0.75rem;
-}
-
-.results-box {
-    background: grey;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-@media (max-width: 768px) {
-    .results-box {
-        margin-top: 20px;
-    }
-}
-</style>
+<!-- Script principal -->
+<script src="{{ url_for('static', filename='js/calculadora.js') }}"></script>
 
 {% endblock %}
