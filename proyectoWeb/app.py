@@ -1,56 +1,55 @@
-# app.py
-from flask import Flask, send_from_directory
-from flask_login import LoginManager
-from extensions import db
+
+from flask import Flask, render_template, jsonify
+from exchange_provider import ExchangeProvider
 import os
 
 app = Flask(__name__)
 
-# Configuración - Usar la base de datos existente
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-DB_PATH = os.path.join(BASE_DIR, 'instance', 'tasas.db')
+# Crear una instancia del proveedor de tasas
+exchange = ExchangeProvider()
 
-app.config['SECRET_KEY'] = 'tu-clave-secreta-aqui-cambiala-por-una-segura'
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_PATH}'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+@app.route('/')
+def index():
+    """Página principal - Calculadora"""
+    return render_template('calculadora.html')
 
-print(f"📁 Base de datos en: {DB_PATH}")
+@app.route('/api/tasas')
+def api_tasas():
+    """Devuelve las tasas actuales directamente desde ExchangeProvider"""
+    try:
+        rates = exchange.get_all_rates()
+        
+        resultado = [
+            {'tipo': 'bcv_usd', 'valor': rates.get('bcv_usd', 0)},
+            {'tipo': 'bcv_eur', 'valor': rates.get('bcv_eur', 0)},
+            {'tipo': 'p2p_ves', 'valor': rates.get('p2p_ves', 0)}
+        ]
+        
+        print(f"📊 Tasas enviadas: {resultado}")  # Para debug
+        return jsonify(resultado)
+        
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        # Valores por defecto si falla
+        return jsonify([
+            {'tipo': 'bcv_usd', 'valor': 36.50},
+            {'tipo': 'bcv_eur', 'valor': 39.20},
+            {'tipo': 'p2p_ves', 'valor': 42.80}
+        ])
 
-# Inicializar extensiones
-db.init_app(app)
-
-# Configurar Login Manager
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'auth.login'
-login_manager.login_message = 'Por favor, inicia sesión para acceder a esta página'
-login_manager.login_message_category = 'info'
-
-# Importar modelos
-from models import User, HistorialTasa, CalculoUsuario
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
-# Importar blueprints
-from routes.views import views
-from routes.auth import auth
-
-# Registrar blueprints
-app.register_blueprint(views)
-app.register_blueprint(auth)
-
-# Service worker
-
-@app.route('/sw.js')
-def serve_sw():
-    return send_from_directory(
-        os.path.join(app.root_path, 'static', 'js'),
-        'sw.js',
-        mimetype='application/javascript'
-    )
+@app.route('/api/actualizar-tasas')
+def actualizar_tasas():
+    """Forzar actualización y devolver tasas frescas"""
+    try:
+        rates = exchange.get_all_rates()
+        return jsonify({
+            'success': True,
+            'rates': rates
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
+    print("🚀 Calculadora iniciada en http://localhost:" + str(port))
     app.run(debug=True, host='0.0.0.0', port=port)
