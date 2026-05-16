@@ -172,6 +172,63 @@
         .rate-box.eur b { color: #64B5F6; }
         .rate-box.p2p b { color: #F0B90B; }
         
+        /* Nuevo estilo para porcentajes */
+        .percentage-section {
+            background: rgba(240, 185, 11, 0.1);
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(240, 185, 11, 0.2);
+        }
+        
+        .percentage-title {
+            text-align: center;
+            font-size: 11px;
+            color: #F0B90B;
+            margin-bottom: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        
+        .percentage-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .percentage-card {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .percentage-card .label {
+            font-size: 11px;
+            color: #aaa;
+            margin-bottom: 6px;
+        }
+        
+        .percentage-card .value {
+            font-size: 20px;
+            font-weight: bold;
+            font-family: monospace;
+        }
+        
+        .percentage-card .value.positive {
+            color: #4CAF50;
+        }
+        
+        .percentage-card .value.negative {
+            color: #ff6b6b;
+        }
+        
+        .percentage-card .sub {
+            font-size: 9px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
         .input-group {
             background: rgba(26, 26, 46, 0.8);
             border-radius: 60px;
@@ -341,6 +398,7 @@
             .res-card .res-val { font-size: 14px; }
             .input-group input { font-size: 18px; }
             .tasa-selector { flex-direction: column; }
+            .percentage-card .value { font-size: 16px; }
         }
     </style>
 </head>
@@ -386,6 +444,23 @@
             <div class="rate-box p2p">
                 <span>🟡 P2P Binance</span>
                 <b id="p2pRate">--.-- Bs</b>
+            </div>
+        </div>
+
+        <!-- Nueva sección de porcentajes -->
+        <div class="percentage-section" id="percentageSection">
+            <div class="percentage-title">📊 DIFERENCIA PORCENTUAL</div>
+            <div class="percentage-grid">
+                <div class="percentage-card">
+                    <div class="label">EUR vs USD (BCV)</div>
+                    <div class="value" id="eurVsUsdPct">--%</div>
+                    <div class="sub">Diferencia entre tasas BCV</div>
+                </div>
+                <div class="percentage-card">
+                    <div class="label">BINANCE vs USD (BCV)</div>
+                    <div class="value" id="binanceVsUsdPct">--%</div>
+                    <div class="sub">Brecha entre P2P y oficial</div>
+                </div>
             </div>
         </div>
 
@@ -446,6 +521,33 @@
         setTimeout(() => toast.remove(), 3000);
     }
 
+    // Función para calcular y mostrar porcentajes
+    function actualizarPorcentajes() {
+        if (tasas.bcv_usd > 0 && tasas.bcv_eur > 0) {
+            // Porcentaje EUR vs USD (diferencia relativa con respecto al USD)
+            const eurVsUsd = ((tasas.bcv_eur / tasas.bcv_usd) - 1) * 100;
+            const eurElement = document.getElementById('eurVsUsdPct');
+            eurElement.textContent = `${eurVsUsd > 0 ? '+' : ''}${eurVsUsd.toFixed(2)}%`;
+            eurElement.className = `value ${eurVsUsd >= 0 ? 'positive' : 'negative'}`;
+            
+            // Tooltip explicativo
+            document.querySelector('#percentageSection .percentage-card:first-child .sub').innerHTML = 
+                `EUR está ${eurVsUsd > 0 ? `${eurVsUsd.toFixed(2)}% más caro` : `${Math.abs(eurVsUsd).toFixed(2)}% más barato`} que USD`;
+        }
+        
+        if (tasas.bcv_usd > 0 && tasas.p2p_ves > 0) {
+            // Porcentaje Binance vs USD
+            const binanceVsUsd = ((tasas.p2p_ves / tasas.bcv_usd) - 1) * 100;
+            const binanceElement = document.getElementById('binanceVsUsdPct');
+            binanceElement.textContent = `${binanceVsUsd > 0 ? '+' : ''}${binanceVsUsd.toFixed(2)}%`;
+            binanceElement.className = `value ${binanceVsUsd >= 0 ? 'positive' : 'negative'}`;
+            
+            // Tooltip explicativo
+            document.querySelector('#percentageSection .percentage-card:last-child .sub').innerHTML = 
+                `P2P está ${binanceVsUsd > 0 ? `${binanceVsUsd.toFixed(2)}% por encima` : `${Math.abs(binanceVsUsd).toFixed(2)}% por debajo`} del oficial`;
+        }
+    }
+
     async function cargarTasas() {
         try {
             document.getElementById('status').innerHTML = '🔄 Cargando tasas...';
@@ -461,6 +563,9 @@
             document.getElementById('bcvUsd').innerHTML = `${tasas.bcv_usd.toFixed(2)} Bs`;
             document.getElementById('bcvEur').innerHTML = `${tasas.bcv_eur.toFixed(2)} Bs`;
             document.getElementById('p2pRate').innerHTML = `${tasas.p2p_ves.toFixed(2)} Bs`;
+            
+            // Actualizar porcentajes después de cargar tasas
+            actualizarPorcentajes();
             
             document.getElementById('status').innerHTML = `✅ Tasas actualizadas - ${new Date().toLocaleTimeString()}`;
             calcular();
