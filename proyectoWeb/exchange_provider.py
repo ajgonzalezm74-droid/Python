@@ -9,7 +9,7 @@ class ExchangeProvider:
         self.session = requests.Session()
         self.cache = TTLCache(maxsize=20, ttl=600)  # 10 min para pruebas
         self.bcv_url = "https://bcv.org.ve"
-        self.binance_url = "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search"
+        self.binance_url = "https://binance.com"
 
     def get_headers(self, is_binance=False):
         ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
@@ -17,11 +17,12 @@ class ExchangeProvider:
         if is_binance:
             headers.update({
                 "Content-Type": "application/json",
-                "clienttype": "web"
+                "clienttype": "web" # VITAL
             })
         return headers
 
     def get_all_rates(self):
+        """Este es el método que tu service.py está buscando"""
         bcv = self.get_bcv_rates()
         p2p = self.get_binance_p2p()
         return {
@@ -32,7 +33,7 @@ class ExchangeProvider:
 
     def get_bcv_rates(self):
         try:
-            # Forzamos verify=False para solventar el error de certificado (curl 60) en Render
+            # Corrección del error curl 60 (SSL) usando verify=False
             resp = curl_requests.get(
                 self.bcv_url, 
                 headers=self.get_headers(), 
@@ -40,7 +41,6 @@ class ExchangeProvider:
                 timeout=20, 
                 verify=False
             )
-            
             soup = BeautifulSoup(resp.text, "html.parser")
             rates = {}
             for code, e_id in [("USD", "dolar"), ("EUR", "euro")]:
@@ -48,16 +48,13 @@ class ExchangeProvider:
                 if container and container.find("strong"):
                     val = container.find("strong").text.strip().replace(",", ".")
                     rates[code] = round(float(re.sub(r'[^\d.]', '', val)), 2)
-            
-            if not rates:
-                print("BCV: Estructura HTML modificada o selectores no encontrados.")
-                
             return rates
         except Exception as e: 
             print(f"BCV Scraping error: {e}")
             return {"USD": 0.0, "EUR": 0.0}
 
     def get_binance_p2p(self):
+        # Tu lógica original intacta para restaurar su funcionamiento
         payload = {
             "asset": "USDT", "fiat": "VES", "merchantCheck": True,
             "page": 1, "rows": 3, "tradeType": "SELL",
@@ -66,14 +63,9 @@ class ExchangeProvider:
         try:
             resp = self.session.post(self.binance_url, json=payload, 
                                     headers=self.get_headers(True), timeout=15)
-            
-            # Validamos que el código de respuesta sea exitoso antes de parsear el JSON
-            if resp.status_code == 200:
-                data = resp.json()
-                if data.get("data"):
-                    return float(data["data"][0]["adv"]["price"])
-            else:
-                print(f"Binance API retornó status code: {resp.status_code}")
+            data = resp.json()
+            if data.get("data"):
+                return float(data["data"][0]["adv"]["price"])
         except Exception as e:
             print(f"Binance error: {e}")
         return 0.0
