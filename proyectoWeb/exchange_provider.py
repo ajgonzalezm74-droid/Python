@@ -32,22 +32,21 @@ class ExchangeProvider:
         }
 
     def get_bcv_rates(self):
-    try:
-        import pyDolarVenezuela as pdv
-        bcv = pdv.Bcv()
-        
-        usd = bcv.get_rates(currency_code='USD', prettify=False)
-        eur = bcv.get_rates(currency_code='EUR', prettify=False)
-        
-        return {
-            "USD": float(usd) if usd else 0.0,
-            "EUR": float(eur) if eur else 0.0
-        }
-    except Exception as e:
-        print(f"Error BCV (pyDolarVenezuela): {e}")
-        return {"USD": 0.0, "EUR": 0.0}
+        try:
+            import pyDolarVenezuela as pdv
+            bcv = pdv.Bcv()
+            
+            usd = bcv.get_rates(currency_code='USD', prettify=False)
+            eur = bcv.get_rates(currency_code='EUR', prettify=False)
+            
+            return {
+                "USD": float(usd) if usd else 0.0,
+                "EUR": float(eur) if eur else 0.0
+            }
+        except Exception as e:
+            print(f"Error BCV (pyDolarVenezuela): {e}")
+            return {"USD": 0.0, "EUR": 0.0}
 
-    
     def get_binance_p2p(self):
         # --- TU CÓDIGO DE BINANCE INTACTO ---
         payload = {
