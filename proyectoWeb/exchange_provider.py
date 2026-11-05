@@ -9,7 +9,7 @@ class ExchangeProvider:
         self.session = requests.Session()
         self.cache = TTLCache(maxsize=20, ttl=600)  # 10 min para pruebas
         self.bcv_url = "https://bcv.org.ve"
-        self.binance_url = "https://binance.com"
+        self.binance_url = "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search"
 
     def get_headers(self, is_binance=False):
         ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
@@ -32,12 +32,13 @@ class ExchangeProvider:
 
     def get_bcv_rates(self):
         try:
+            # Forzamos verify=False para solventar el error de certificado (curl 60) en Render
             resp = curl_requests.get(
                 self.bcv_url, 
                 headers=self.get_headers(), 
                 impersonate="chrome", 
                 timeout=20, 
-                verify=True
+                verify=False
             )
             
             soup = BeautifulSoup(resp.text, "html.parser")
@@ -65,9 +66,14 @@ class ExchangeProvider:
         try:
             resp = self.session.post(self.binance_url, json=payload, 
                                     headers=self.get_headers(True), timeout=15)
-            data = resp.json()
-            if data.get("data"):
-                return float(data["data"][0]["adv"]["price"])
+            
+            # Validamos que el código de respuesta sea exitoso antes de parsear el JSON
+            if resp.status_code == 200:
+                data = resp.json()
+                if data.get("data"):
+                    return float(data["data"][0]["adv"]["price"])
+            else:
+                print(f"Binance API retornó status code: {resp.status_code}")
         except Exception as e:
             print(f"Binance error: {e}")
         return 0.0
