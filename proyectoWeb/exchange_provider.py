@@ -6,9 +6,9 @@ import re
 class ExchangeProvider:
     def __init__(self):
         self.session = requests.Session()
-        self.cache = TTLCache(maxsize=20, ttl=600) # 10 min para pruebas
+        self.cache = TTLCache(maxsize=20, ttl=600) # 10 min
         self.bcv_url = "https://bcv.org.ve"
-        #self.binance_url = "https://binance.com"
+        # Mantenemos tu URL de Binance intacta
         self.binance_url = "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search"
 
     def get_headers(self, is_binance=False):
@@ -32,20 +32,29 @@ class ExchangeProvider:
         }
 
     def get_bcv_rates(self):
+        """
+        Usamos la API de DolarAPI para evitar bloqueos y cambios de HTML del BCV.
+        Es mucho más estable y no requiere 'verify=False'.
+        """
+        rates = {"USD": 0.0, "EUR": 0.0}
         try:
-            resp = self.session.get(self.bcv_url, headers=self.get_headers(), timeout=20, verify=False)
-            soup = BeautifulSoup(resp.text, "html.parser")
-            rates = {}
-            for code, e_id in [("USD", "dolar"), ("EUR", "euro")]:
-                container = soup.find("div", {"id": e_id})
-                if container and container.find("strong"):
-                    val = container.find("strong").text.strip().replace(",", ".")
-                    rates[code] = round(float(re.sub(r'[^\d.]', '', val)), 2)
+            # 1. Obtener USD
+            resp_usd = self.session.get("https://ve.dolarapi.com/v1/dolares/oficial", timeout=10)
+            if resp_usd.status_code == 200:
+                rates["USD"] = float(resp_usd.json().get("promedio", 0.0))
+                
+            # 2. Obtener EUR
+            resp_eur = self.session.get("https://ve.dolarapi.com/v1/euros/oficial", timeout=10)
+            if resp_eur.status_code == 200:
+                rates["EUR"] = float(resp_eur.json().get("promedio", 0.0))
+                
             return rates
-        except: return {"USD": 0.0, "EUR": 0.0}
+        except Exception as e:
+            print(f"Error obteniendo tasas BCV (API): {e}")
+            return rates
 
     def get_binance_p2p(self):
-        # Payload simplificado al máximo para evitar el error de JSON
+        # --- TU CÓDIGO DE BINANCE INTACTO ---
         payload = {
             "asset": "USDT", "fiat": "VES", "merchantCheck": True,
             "page": 1, "rows": 3, "tradeType": "SELL",
