@@ -1,15 +1,15 @@
-import requests
+import re
 from bs4 import BeautifulSoup
 from cachetools import TTLCache
-import re
+import requests
+from curl_cffi import requests as curl_requests
 
 class ExchangeProvider:
     def __init__(self):
         self.session = requests.Session()
-        self.cache = TTLCache(maxsize=20, ttl=600) # 10 min para pruebas
+        self.cache = TTLCache(maxsize=20, ttl=600)  # 10 min para pruebas
         self.bcv_url = "https://bcv.org.ve"
-        #self.binance_url = "https://binance.com"
-        self.binance_url = "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search"
+        self.binance_url = "https://binance.com"
 
     def get_headers(self, is_binance=False):
         ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
@@ -17,12 +17,11 @@ class ExchangeProvider:
         if is_binance:
             headers.update({
                 "Content-Type": "application/json",
-                "clienttype": "web" # VITAL
+                "clienttype": "web"
             })
         return headers
 
     def get_all_rates(self):
-        """Este es el método que tu service.py está buscando"""
         bcv = self.get_bcv_rates()
         p2p = self.get_binance_p2p()
         return {
@@ -33,7 +32,14 @@ class ExchangeProvider:
 
     def get_bcv_rates(self):
         try:
-            resp = self.session.get(self.bcv_url, headers=self.get_headers(), timeout=20, verify=False)
+            resp = curl_requests.get(
+                self.bcv_url, 
+                headers=self.get_headers(), 
+                impersonate="chrome", 
+                timeout=20, 
+                verify=True
+            )
+            
             soup = BeautifulSoup(resp.text, "html.parser")
             rates = {}
             for code, e_id in [("USD", "dolar"), ("EUR", "euro")]:
@@ -41,11 +47,16 @@ class ExchangeProvider:
                 if container and container.find("strong"):
                     val = container.find("strong").text.strip().replace(",", ".")
                     rates[code] = round(float(re.sub(r'[^\d.]', '', val)), 2)
+            
+            if not rates:
+                print("BCV: Estructura HTML modificada o selectores no encontrados.")
+                
             return rates
-        except: return {"USD": 0.0, "EUR": 0.0}
+        except Exception as e: 
+            print(f"BCV Scraping error: {e}")
+            return {"USD": 0.0, "EUR": 0.0}
 
     def get_binance_p2p(self):
-        # Payload simplificado al máximo para evitar el error de JSON
         payload = {
             "asset": "USDT", "fiat": "VES", "merchantCheck": True,
             "page": 1, "rows": 3, "tradeType": "SELL",
@@ -56,7 +67,6 @@ class ExchangeProvider:
                                     headers=self.get_headers(True), timeout=15)
             data = resp.json()
             if data.get("data"):
-                # Acceso correcto a la lista de anuncios
                 return float(data["data"][0]["adv"]["price"])
         except Exception as e:
             print(f"Binance error: {e}")
