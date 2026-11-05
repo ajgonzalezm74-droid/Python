@@ -44,10 +44,16 @@ class ExchangeProvider:
                 rates["USD"] = float(resp_usd.json().get("promedio", 0.0))
                 
             # 2. Obtener EUR
-            resp_eur = self.session.get("https://ve.dolarapi.com/v1/euros/oficial", timeout=10)
+            # Obtener EUR (usando el endpoint completo)
+            resp_eur = self.session.get("https://ve.dolarapi.com/v1/euros", timeout=10)
             if resp_eur.status_code == 200:
-                rates["EUR"] = float(resp_eur.json().get("promedio", 0.0))
-                
+                euros = resp_eur.json()
+                for item in euros:
+                    if item.get("fuente") == "oficial" and item.get("moneda") == "EUR":
+                        rates["EUR"] = float(item.get("promedio", 0.0))
+                        break
+            
+            
             return rates
         except Exception as e:
             print(f"Error obteniendo tasas BCV (API): {e}")
