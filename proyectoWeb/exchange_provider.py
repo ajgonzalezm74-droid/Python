@@ -32,33 +32,22 @@ class ExchangeProvider:
         }
 
     def get_bcv_rates(self):
-        """
-        Usamos la API de DolarAPI para evitar bloqueos y cambios de HTML del BCV.
-        Es mucho más estable y no requiere 'verify=False'.
-        """
-        rates = {"USD": 0.0, "EUR": 0.0}
-        try:
-            # 1. Obtener USD
-            resp_usd = self.session.get("https://ve.dolarapi.com/v1/dolares/oficial", timeout=10)
-            if resp_usd.status_code == 200:
-                rates["USD"] = float(resp_usd.json().get("promedio", 0.0))
-                
-            # 2. Obtener EUR
-            # Obtener EUR (usando el endpoint completo)
-            resp_eur = self.session.get("https://ve.dolarapi.com/v1/euros", timeout=10)
-            if resp_eur.status_code == 200:
-                euros = resp_eur.json()
-                for item in euros:
-                    if item.get("fuente") == "oficial" and item.get("moneda") == "EUR":
-                        rates["EUR"] = float(item.get("promedio", 0.0))
-                        break
-            
-            
-            return rates
-        except Exception as e:
-            print(f"Error obteniendo tasas BCV (API): {e}")
-            return rates
+    try:
+        import pyDolarVenezuela as pdv
+        bcv = pdv.Bcv()
+        
+        usd = bcv.get_rates(currency_code='USD', prettify=False)
+        eur = bcv.get_rates(currency_code='EUR', prettify=False)
+        
+        return {
+            "USD": float(usd) if usd else 0.0,
+            "EUR": float(eur) if eur else 0.0
+        }
+    except Exception as e:
+        print(f"Error BCV (pyDolarVenezuela): {e}")
+        return {"USD": 0.0, "EUR": 0.0}
 
+    
     def get_binance_p2p(self):
         # --- TU CÓDIGO DE BINANCE INTACTO ---
         payload = {
