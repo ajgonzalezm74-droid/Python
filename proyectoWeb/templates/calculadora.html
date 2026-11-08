@@ -153,6 +153,7 @@
             border-radius: 16px;
             text-align: center;
             border: 1px solid rgba(255,255,255,0.08);
+            position: relative;
         }
         
         .rate-box span {
@@ -171,8 +172,17 @@
         .rate-box.usd b { color: #4CAF50; }
         .rate-box.eur b { color: #64B5F6; }
         .rate-box.p2p b { color: #F0B90B; }
+
+        /* Flechas de tendencia */
+        .trend-indicator {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 10px;
+        }
+        .trend-up { color: #ff6b6b; }
+        .trend-down { color: #4CAF50; }
         
-        /* Nuevo estilo para porcentajes */
         .percentage-section {
             background: rgba(240, 185, 11, 0.1);
             border-radius: 16px;
@@ -215,13 +225,8 @@
             font-family: monospace;
         }
         
-        .percentage-card .value.positive {
-            color: #4CAF50;
-        }
-        
-        .percentage-card .value.negative {
-            color: #ff6b6b;
-        }
+        .percentage-card .value.positive { color: #4CAF50; }
+        .percentage-card .value.negative { color: #ff6b6b; }
         
         .percentage-card .sub {
             font-size: 9px;
@@ -236,7 +241,7 @@
             display: flex;
             align-items: center;
             border: 2px solid rgba(240, 185, 11, 0.2);
-            margin-bottom: 5px; /* Reducido para dar espacio al resultado de la operación */
+            margin-bottom: 5px;
         }
         
         .input-group:focus-within {
@@ -262,12 +267,24 @@
             font-family: monospace;
             font-weight: 600;
         }
+
+        /* Botón de limpiar */
+        .btn-clear {
+            background: transparent;
+            border: none;
+            color: #666;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+            transition: color 0.2s;
+        }
+        .btn-clear:hover { color: #ff4444; }
         
-        /* Estilo para el resultado de la operación matemática */
         #resultadoOperacion {
             text-align: right;
-            font-size: 12px;
-            color: #888;
+            font-size: 14px;
+            color: #4CAF50; /* Verde llamativo */
+            font-weight: bold;
             margin-bottom: 15px;
             min-height: 15px;
             font-family: monospace;
@@ -304,6 +321,7 @@
             margin-bottom: 20px;
         }
         
+        /* Tarjetas de resultados clicables */
         .res-card {
             background: rgba(255,255,255,0.03);
             margin-bottom: 10px;
@@ -314,10 +332,11 @@
             align-items: center;
             border-left: 4px solid #F0B90B;
             transition: all 0.2s;
+            cursor: pointer; /* Cursor de mano */
         }
         
         .res-card:hover {
-            background: rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.08);
             transform: translateX(5px);
         }
         
@@ -387,11 +406,10 @@
             font-size: 14px;
             z-index: 1050;
             animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         
-        .toast.error {
-            background: #dc3545;
-        }
+        .toast.error { background: #dc3545; }
         
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
@@ -446,6 +464,7 @@
         <div class="rates-grid">
             <div class="rate-box usd">
                 <span>🏦 BCV USD</span>
+                <div id="trendUsd" class="trend-indicator"></div>
                 <b id="bcvUsd">--.-- Bs</b>
             </div>
             <div class="rate-box eur">
@@ -458,7 +477,6 @@
             </div>
         </div>
 
-        <!-- Nueva sección de porcentajes -->
         <div class="percentage-section" id="percentageSection">
             <div class="percentage-title">📊 DIFERENCIA PORCENTUAL</div>
             <div class="percentage-grid">
@@ -477,11 +495,10 @@
 
         <div class="input-group">
             <label id="lblInput">USD</label>
-            <!-- Cambiado de type="number" a type="text" para permitir matemáticas -->
-            <input type="text" id="cantidad" value="" placeholder="Ej: 100 + 50" oninput="calcular()">
+            <input type="text" id="cantidad" value="" placeholder="Ej: 100 o 50+50*2" oninput="calcular()">
+            <button class="btn-clear" onclick="limpiarInput()" title="Limpiar">🗑️</button>
         </div>
         
-        <!-- Div para mostrar el resultado de la operación matemática -->
         <div id="resultadoOperacion"></div>
 
         <div class="mode-selector">
@@ -490,21 +507,22 @@
         </div>
 
         <div class="results-section">
-            <div class="res-card p2p">
+            <!-- Al hacer clic en las tarjetas se copia el valor -->
+            <div class="res-card p2p" onclick="copiarResultado('resultadoP2P')">
                 <div>
                     <small>🟡 Binance P2P</small>
                     <div class="res-detail" id="detalleP2P"></div>
                 </div>
                 <div class="res-val" id="resultadoP2P">0.00</div>
             </div>
-            <div class="res-card usd">
+            <div class="res-card usd" onclick="copiarResultado('resultadoUSD')">
                 <div>
                     <small>🏦 BCV USD (Oficial)</small>
                     <div class="res-detail" id="detalleUSD"></div>
                 </div>
                 <div class="res-val" id="resultadoUSD">0.00</div>
             </div>
-            <div class="res-card eur">
+            <div class="res-card eur" onclick="copiarResultado('resultadoEUR')">
                 <div>
                     <small>🏦 BCV EUR</small>
                     <div class="res-detail" id="detalleEUR"></div>
@@ -519,11 +537,8 @@
 
 <script>
     // Variables globales
-    let tasas = {
-        bcv_usd: 0,
-        bcv_eur: 0,
-        p2p_ves: 0
-    };
+    let tasas = { bcv_usd: 0, bcv_eur: 0, p2p_ves: 0 };
+    let tasasAnteriores = JSON.parse(localStorage.getItem('ultimasTasas')) || null; // Para la tendencia
     let tipoTasa = 'bcv';
     let tasaManual = 0;
     let modo = 'USD';
@@ -536,7 +551,50 @@
         setTimeout(() => toast.remove(), 3000);
     }
 
-    // Función para calcular y mostrar porcentajes
+    // Copiar resultado al portapapeles
+    function copiarResultado(idElemento) {
+        const texto = document.getElementById(idElemento).innerText;
+        if (texto === 'Bs. 0,00' || texto === '0.00' || texto === '') return;
+        
+        navigator.clipboard.writeText(texto).then(() => {
+            mostrarToast(`📋 Copiado: ${texto}`);
+        }).catch(() => {
+            mostrarToast('Error al copiar', true);
+        });
+    }
+
+    // Limpiar el input
+    function limpiarInput() {
+        document.getElementById('cantidad').value = '';
+        calcular();
+        document.getElementById('cantidad').focus();
+    }
+
+    // Evaluar operaciones matemáticas
+    function evaluarExpresion(expresion) {
+        try {
+            let limpia = expresion.replace(/[^0-9+\-*/().]/g, '');
+            if (!limpia) return 0;
+            let resultado = new Function('return ' + limpia)();
+            if (isNaN(resultado) || !isFinite(resultado)) return 0;
+            return Math.round(resultado * 100) / 100; 
+        } catch (error) { return 0; }
+    }
+
+    // Actualizar flechas de tendencia
+    function actualizarTendencia() {
+        const trendDiv = document.getElementById('trendUsd');
+        if (tasasAnteriores && tasasAnteriores.bcv_usd > 0 && tasas.bcv_usd > 0) {
+            if (tasas.bcv_usd > tasasAnteriores.bcv_usd) {
+                trendDiv.innerHTML = '<span class="trend-up">⬆️</span>';
+            } else if (tasas.bcv_usd < tasasAnteriores.bcv_usd) {
+                trendDiv.innerHTML = '<span class="trend-down">⬇️</span>';
+            } else {
+                trendDiv.innerHTML = '';
+            }
+        }
+    }
+
     function actualizarPorcentajes() {
         if (tasas.bcv_usd > 0 && tasas.bcv_eur > 0) {
             const eurVsUsd = ((tasas.bcv_eur / tasas.bcv_usd) - 1) * 100;
@@ -565,18 +623,24 @@
             const response = await fetch('/api/tasas');
             const data = await response.json();
             
+            // Guardar tasas nuevas
             data.forEach(tasa => {
                 if (tasa.tipo === 'bcv_usd') tasas.bcv_usd = tasa.valor;
                 if (tasa.tipo === 'bcv_eur') tasas.bcv_eur = tasa.valor;
                 if (tasa.tipo === 'p2p_ves') tasas.p2p_ves = tasa.valor;
             });
+
+            // Guardar en localStorage para la próxima vez (tendencia)
+            if (tasas.bcv_usd > 0) {
+                localStorage.setItem('ultimasTasas', JSON.stringify(tasas));
+            }
             
             document.getElementById('bcvUsd').innerHTML = `${tasas.bcv_usd.toFixed(2)} Bs`;
             document.getElementById('bcvEur').innerHTML = `${tasas.bcv_eur.toFixed(2)} Bs`;
             document.getElementById('p2pRate').innerHTML = `${tasas.p2p_ves.toFixed(2)} Bs`;
             
+            actualizarTendencia();
             actualizarPorcentajes();
-            
             document.getElementById('status').innerHTML = `✅ Tasas actualizadas - ${new Date().toLocaleTimeString()}`;
             calcular();
         } catch (error) {
@@ -611,7 +675,6 @@
 
     function setTipoTasa(tipo) {
         tipoTasa = tipo;
-        
         document.querySelectorAll('.tasa-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`tasa-${tipo}`).classList.add('active');
         
@@ -621,13 +684,17 @@
         } else {
             manualContainer.classList.remove('active');
         }
-        
         calcular();
     }
 
     function setTasaManual() {
         tasaManual = parseFloat(document.getElementById('tasaManual').value) || 0;
-        calcular();
+        // Forzar el modo manual si el usuario escribe una tasa
+        if (tasaManual > 0 && tipoTasa !== 'manual') {
+            setTipoTasa('manual');
+        } else {
+            calcular();
+        }
     }
 
     function getTasaActual() {
@@ -639,7 +706,6 @@
 
     function setModo(nuevoModo) {
         modo = nuevoModo;
-        
         if (modo === 'USD') {
             document.getElementById('btnUSD').classList.add('active');
             document.getElementById('btnVES').classList.remove('active');
@@ -649,86 +715,65 @@
             document.getElementById('btnUSD').classList.remove('active');
             document.getElementById('lblInput').innerHTML = 'VES';
         }
-        
         calcular();
     }
 
-    // NUEVA FUNCIÓN: Evalúa las operaciones matemáticas del input
-    function evaluarExpresion(expresion) {
-        try {
-            // Limpiamos la expresión dejando solo números y operadores permitidos
-            let limpia = expresion.replace(/[^0-9+\-*/().]/g, '');
-            if (!limpia) return 0;
+    function calcular() {
+        const expresion = document.getElementById('cantidad').value;
+        const resultadoOperacionDiv = document.getElementById('resultadoOperacion');
+        
+        // Si está vacío, limpiamos resultados
+        if (expresion.trim() === '') {
+            resultadoOperacionDiv.innerText = '';
+            document.getElementById('resultadoP2P').innerHTML = 'Bs. 0,00';
+            document.getElementById('resultadoUSD').innerHTML = 'Bs. 0,00';
+            document.getElementById('resultadoEUR').innerHTML = 'Bs. 0,00';
+            document.getElementById('detalleP2P').innerHTML = 'Ingresa un monto';
+            document.getElementById('detalleUSD').innerHTML = 'Ingresa un monto';
+            document.getElementById('detalleEUR').innerHTML = 'Ingresa un monto';
+            return;
+        }
+
+        const cantidad = evaluarExpresion(expresion);
+        const tasaUSD = getTasaActual();
+        const nombreTasa = tipoTasa === 'bcv' ? 'BCV' : (tipoTasa === 'paralelo' ? 'P2P' : 'Manual');
+        
+        // Mostrar operación matemática
+        if (expresion !== cantidad.toString() && expresion !== '') {
+            resultadoOperacionDiv.innerText = `= ${cantidad}`;
+        } else {
+            resultadoOperacionDiv.innerText = '';
+        }
+
+        let p2p, usd, eur;
+        
+        if (modo === 'USD') {
+            p2p = cantidad * tasaUSD;
+            usd = cantidad * tasas.bcv_usd;
+            eur = cantidad * tasas.bcv_eur;
             
-            // Usamos Function en lugar de eval para mayor seguridad
-            let resultado = new Function('return ' + limpia)();
+            document.getElementById('detalleP2P').innerHTML = `${cantidad} USD × tasa ${nombreTasa} (${tasaUSD.toFixed(2)})`;
+            document.getElementById('detalleUSD').innerHTML = `${cantidad} USD × BCV USD (${tasas.bcv_usd.toFixed(2)})`;
+            document.getElementById('detalleEUR').innerHTML = `${cantidad} USD × BCV EUR (${tasas.bcv_eur.toFixed(2)})`;
             
-            // Verificamos que sea un número válido
-            if (isNaN(resultado) || !isFinite(resultado)) return 0;
+            document.getElementById('resultadoP2P').innerHTML = `Bs. ${p2p.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('resultadoUSD').innerHTML = `Bs. ${usd.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('resultadoEUR').innerHTML = `Bs. ${eur.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        } else {
+            p2p = cantidad / tasaUSD;
+            usd = cantidad / tasas.bcv_usd;
+            eur = cantidad / tasas.bcv_eur;
             
-            // Redondeamos a 2 decimales
-            return Math.round(resultado * 100) / 100; 
-        } catch (error) {
-            return 0; 
+            document.getElementById('detalleP2P').innerHTML = `${cantidad} Bs ÷ tasa ${nombreTasa} (${tasaUSD.toFixed(2)})`;
+            document.getElementById('detalleUSD').innerHTML = `${cantidad} Bs ÷ BCV USD (${tasas.bcv_usd.toFixed(2)})`;
+            document.getElementById('detalleEUR').innerHTML = `${cantidad} Bs ÷ BCV EUR (${tasas.bcv_eur.toFixed(2)})`;
+            
+            document.getElementById('resultadoP2P').innerHTML = `${p2p.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD`;
+            document.getElementById('resultadoUSD').innerHTML = `${usd.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD`;
+            document.getElementById('resultadoEUR').innerHTML = `${eur.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} EUR`;
         }
     }
-//-------------------------------------------------------------------------------------
-    function calcular() {
-    const expresion = document.getElementById('cantidad').value;
-    const resultadoOperacionDiv = document.getElementById('resultadoOperacion');
-    
-    // Si el usuario borra todo, limpiamos los resultados y salimos
-    if (expresion.trim() === '') {
-        resultadoOperacionDiv.innerText = '';
-        document.getElementById('resultadoP2P').innerHTML = 'Bs. 0,00';
-        document.getElementById('resultadoUSD').innerHTML = 'Bs. 0,00';
-        document.getElementById('resultadoEUR').innerHTML = 'Bs. 0,00';
-        document.getElementById('detalleP2P').innerHTML = 'Ingresa un monto';
-        document.getElementById('detalleUSD').innerHTML = 'Ingresa un monto';
-        document.getElementById('detalleEUR').innerHTML = 'Ingresa un monto';
-        return;
-    }
 
-    const cantidad = evaluarExpresion(expresion);
-    const tasaUSD = getTasaActual();
-    const nombreTasa = tipoTasa === 'bcv' ? 'BCV' : (tipoTasa === 'paralelo' ? 'P2P' : 'Manual');
-    
-    // Mostramos el resultado de la operación matemática si es que escribió una
-    if (expresion !== cantidad.toString() && expresion !== '') {
-        resultadoOperacionDiv.innerText = `= ${cantidad}`;
-    } else {
-        resultadoOperacionDiv.innerText = '';
-    }
-
-    let p2p, usd, eur;
-    
-    if (modo === 'USD') {
-        p2p = cantidad * tasaUSD;
-        usd = cantidad * tasas.bcv_usd;
-        eur = cantidad * tasas.bcv_eur;
-        
-        document.getElementById('detalleP2P').innerHTML = `${cantidad} USD × tasa ${nombreTasa} (${tasaUSD.toFixed(2)})`;
-        document.getElementById('detalleUSD').innerHTML = `${cantidad} USD × BCV USD (${tasas.bcv_usd.toFixed(2)})`;
-        document.getElementById('detalleEUR').innerHTML = `${cantidad} USD × BCV EUR (${tasas.bcv_eur.toFixed(2)})`;
-        
-        document.getElementById('resultadoP2P').innerHTML = `Bs. ${p2p.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-        document.getElementById('resultadoUSD').innerHTML = `Bs. ${usd.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-        document.getElementById('resultadoEUR').innerHTML = `Bs. ${eur.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-    } else {
-        p2p = cantidad / tasaUSD;
-        usd = cantidad / tasas.bcv_usd;
-        eur = cantidad / tasas.bcv_eur;
-        
-        document.getElementById('detalleP2P').innerHTML = `${cantidad} Bs ÷ tasa ${nombreTasa} (${tasaUSD.toFixed(2)})`;
-        document.getElementById('detalleUSD').innerHTML = `${cantidad} Bs ÷ BCV USD (${tasas.bcv_usd.toFixed(2)})`;
-        document.getElementById('detalleEUR').innerHTML = `${cantidad} Bs ÷ BCV EUR (${tasas.bcv_eur.toFixed(2)})`;
-        
-        document.getElementById('resultadoP2P').innerHTML = `${p2p.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD`;
-        document.getElementById('resultadoUSD').innerHTML = `${usd.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD`;
-        document.getElementById('resultadoEUR').innerHTML = `${eur.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} EUR`;
-    }
-}
-//--------------------------------------------------------------------------------------------------------------------
     // Inicializar
     cargarTasas();
     setInterval(cargarTasas, 120000);
