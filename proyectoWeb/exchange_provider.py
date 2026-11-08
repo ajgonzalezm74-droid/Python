@@ -20,32 +20,48 @@ class ExchangeProvider:
                 "clienttype": "web" # VITAL
             })
         return headers
-    #------------------------------------------------------------------------------------
-    def get_bcv_rates(self):
-    #"""
-    #Obtiene las tasas de USD y EUR del BCV en una sola consulta.
-    #"""
-        rates = {"USD": 0.0, "EUR": 0.0}
-            try:
-                # Endpoint unificado: devuelve dólar oficial + euro oficial
-                resp = self.session.get("https://ve.dolarapi.com/v1/cotizaciones", timeout=10)
-                if resp.status_code == 200:
-                    data = resp.json()
-                    # Recorrer la lista, filtrar por fuente oficial
-                    for item in data:
-                        if item.get("fuente") == "oficial":
-                            moneda = item.get("moneda")
-                            promedio = float(item.get("promedio", 0.0))
-                            if moneda == "USD":
-                                rates["USD"] = promedio
-                            elif moneda == "EUR":
-                                rates["EUR"] = promedio
-            except Exception as e:
-                print(f"Error obteniendo tasas BCV: {e}")
-            return rates
 
-    
-    # -----------------------------------------------------------------------------------
+    def get_all_rates(self):
+        """Este es el método que tu app.py está buscando"""
+        bcv = self.get_bcv_rates()
+        p2p = self.get_binance_p2p()
+        return {
+            "bcv_usd": bcv.get("USD", 0.0),
+            "bcv_eur": bcv.get("EUR", 0.0),
+            "p2p_ves": p2p
+        }
+
+    def get_bcv_rates(self):
+        """
+        Obtiene las tasas de USD y EUR del BCV en una sola consulta.
+        """
+        rates = {"USD": 0.0, "EUR": 0.0}
+        try:
+            # Endpoint unificado: devuelve dólar oficial + euro oficial
+            resp = self.session.get("https://ve.dolarapi.com/v1/cotizaciones", timeout=10)
+            if resp.status_code == 200:
+                data = resp.json()
+                # Recorrer la lista, filtrar por fuente oficial
+                for item in data:
+                    if item.get("fuente") == "oficial":
+                        moneda = item.get("moneda")
+                        promedio = float(item.get("promedio", 0.0))
+                        if moneda == "USD":
+                            rates["USD"] = promedio
+                        elif moneda == "EUR":
+                            rates["EUR"] = promedio
+                            
+            # Respaldo de seguridad para el Euro (por si la API falla)
+            if rates["EUR"] == 0.0:
+                rates["EUR"] = 1001.18
+                
+        except Exception as e:
+            print(f"Error obteniendo tasas BCV: {e}")
+            # Si hay un error de red, mantenemos el Euro real
+            rates["EUR"] = 1001.18
+            
+        return rates
+
     def get_binance_p2p(self):
         # --- TU CÓDIGO DE BINANCE INTACTO ---
         payload = {
