@@ -478,7 +478,7 @@
         <div class="input-group">
             <label id="lblInput">USD</label>
             <!-- Cambiado de type="number" a type="text" para permitir matemáticas -->
-            <input type="text" id="cantidad" value="100" placeholder="Ej: 100 + 50" oninput="calcular()">
+            <input type="text" id="cantidad" value="" placeholder="Ej: 100 + 50" oninput="calcular()">
         </div>
         
         <!-- Div para mostrar el resultado de la operación matemática -->
@@ -672,54 +672,63 @@
             return 0; 
         }
     }
-
+//-------------------------------------------------------------------------------------
     function calcular() {
-        // Capturamos la expresión tal cual la escribió el usuario
-        const expresion = document.getElementById('cantidad').value;
-        
-        // Obtenemos el número evaluado
-        const cantidad = evaluarExpresion(expresion);
-        
-        const tasaUSD = getTasaActual();
-        const nombreTasa = tipoTasa === 'bcv' ? 'BCV' : (tipoTasa === 'paralelo' ? 'P2P' : 'Manual');
-        
-        // Mostramos el resultado de la operación matemática si es que escribió una
-        const resultadoOperacionDiv = document.getElementById('resultadoOperacion');
-        if (expresion !== cantidad.toString() && expresion !== '') {
-            resultadoOperacionDiv.innerText = `= ${cantidad}`;
-        } else {
-            resultadoOperacionDiv.innerText = '';
-        }
-
-        let p2p, usd, eur;
-        
-        if (modo === 'USD') {
-            p2p = cantidad * tasaUSD;
-            usd = cantidad * tasas.bcv_usd;
-            eur = cantidad * tasas.bcv_eur;
-            
-            document.getElementById('detalleP2P').innerHTML = `${cantidad} USD × tasa ${nombreTasa} (${tasaUSD.toFixed(2)})`;
-            document.getElementById('detalleUSD').innerHTML = `${cantidad} USD × BCV USD (${tasas.bcv_usd.toFixed(2)})`;
-            document.getElementById('detalleEUR').innerHTML = `${cantidad} USD × BCV EUR (${tasas.bcv_eur.toFixed(2)})`;
-            
-            document.getElementById('resultadoP2P').innerHTML = `Bs. ${p2p.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            document.getElementById('resultadoUSD').innerHTML = `Bs. ${usd.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            document.getElementById('resultadoEUR').innerHTML = `Bs. ${eur.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-        } else {
-            p2p = cantidad / tasaUSD;
-            usd = cantidad / tasas.bcv_usd;
-            eur = cantidad / tasas.bcv_eur;
-            
-            document.getElementById('detalleP2P').innerHTML = `${cantidad} Bs ÷ tasa ${nombreTasa} (${tasaUSD.toFixed(2)})`;
-            document.getElementById('detalleUSD').innerHTML = `${cantidad} Bs ÷ BCV USD (${tasas.bcv_usd.toFixed(2)})`;
-            document.getElementById('detalleEUR').innerHTML = `${cantidad} Bs ÷ BCV EUR (${tasas.bcv_eur.toFixed(2)})`;
-            
-            document.getElementById('resultadoP2P').innerHTML = `${p2p.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD`;
-            document.getElementById('resultadoUSD').innerHTML = `${usd.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD`;
-            document.getElementById('resultadoEUR').innerHTML = `${eur.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} EUR`;
-        }
+    const expresion = document.getElementById('cantidad').value;
+    const resultadoOperacionDiv = document.getElementById('resultadoOperacion');
+    
+    // Si el usuario borra todo, limpiamos los resultados y salimos
+    if (expresion.trim() === '') {
+        resultadoOperacionDiv.innerText = '';
+        document.getElementById('resultadoP2P').innerHTML = 'Bs. 0,00';
+        document.getElementById('resultadoUSD').innerHTML = 'Bs. 0,00';
+        document.getElementById('resultadoEUR').innerHTML = 'Bs. 0,00';
+        document.getElementById('detalleP2P').innerHTML = 'Ingresa un monto';
+        document.getElementById('detalleUSD').innerHTML = 'Ingresa un monto';
+        document.getElementById('detalleEUR').innerHTML = 'Ingresa un monto';
+        return;
     }
 
+    const cantidad = evaluarExpresion(expresion);
+    const tasaUSD = getTasaActual();
+    const nombreTasa = tipoTasa === 'bcv' ? 'BCV' : (tipoTasa === 'paralelo' ? 'P2P' : 'Manual');
+    
+    // Mostramos el resultado de la operación matemática si es que escribió una
+    if (expresion !== cantidad.toString() && expresion !== '') {
+        resultadoOperacionDiv.innerText = `= ${cantidad}`;
+    } else {
+        resultadoOperacionDiv.innerText = '';
+    }
+
+    let p2p, usd, eur;
+    
+    if (modo === 'USD') {
+        p2p = cantidad * tasaUSD;
+        usd = cantidad * tasas.bcv_usd;
+        eur = cantidad * tasas.bcv_eur;
+        
+        document.getElementById('detalleP2P').innerHTML = `${cantidad} USD × tasa ${nombreTasa} (${tasaUSD.toFixed(2)})`;
+        document.getElementById('detalleUSD').innerHTML = `${cantidad} USD × BCV USD (${tasas.bcv_usd.toFixed(2)})`;
+        document.getElementById('detalleEUR').innerHTML = `${cantidad} USD × BCV EUR (${tasas.bcv_eur.toFixed(2)})`;
+        
+        document.getElementById('resultadoP2P').innerHTML = `Bs. ${p2p.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        document.getElementById('resultadoUSD').innerHTML = `Bs. ${usd.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        document.getElementById('resultadoEUR').innerHTML = `Bs. ${eur.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    } else {
+        p2p = cantidad / tasaUSD;
+        usd = cantidad / tasas.bcv_usd;
+        eur = cantidad / tasas.bcv_eur;
+        
+        document.getElementById('detalleP2P').innerHTML = `${cantidad} Bs ÷ tasa ${nombreTasa} (${tasaUSD.toFixed(2)})`;
+        document.getElementById('detalleUSD').innerHTML = `${cantidad} Bs ÷ BCV USD (${tasas.bcv_usd.toFixed(2)})`;
+        document.getElementById('detalleEUR').innerHTML = `${cantidad} Bs ÷ BCV EUR (${tasas.bcv_eur.toFixed(2)})`;
+        
+        document.getElementById('resultadoP2P').innerHTML = `${p2p.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD`;
+        document.getElementById('resultadoUSD').innerHTML = `${usd.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD`;
+        document.getElementById('resultadoEUR').innerHTML = `${eur.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} EUR`;
+    }
+}
+//--------------------------------------------------------------------------------------------------------------------
     // Inicializar
     cargarTasas();
     setInterval(cargarTasas, 120000);
