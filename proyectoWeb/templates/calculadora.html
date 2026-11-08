@@ -102,9 +102,9 @@
         }
         
         .tasa-btn.manual.active {
-            background: #4CAF50;
-            border-color: #4CAF50;
-            color: white;
+            background: #64B5F6;
+            border-color: #64B5F6;
+            color: #000;
         }
         
         .manual-input-container {
@@ -113,7 +113,7 @@
             padding: 15px;
             background: rgba(26, 26, 46, 0.6);
             border-radius: 16px;
-            border: 1px solid rgba(76, 175, 80, 0.3);
+            border: 1px solid rgba(100, 181, 246, 0.3);
         }
         
         .manual-input-container.active {
@@ -123,7 +123,7 @@
         
         .manual-input-container label {
             font-size: 12px;
-            color: #4CAF50;
+            color: #64B5F6;
             margin-bottom: 8px;
             display: block;
             font-weight: 600;
@@ -173,7 +173,6 @@
         .rate-box.eur b { color: #64B5F6; }
         .rate-box.p2p b { color: #F0B90B; }
 
-        /* Flechas de tendencia */
         .trend-indicator {
             position: absolute;
             top: 8px;
@@ -268,7 +267,6 @@
             font-weight: 600;
         }
 
-        /* Botón de limpiar */
         .btn-clear {
             background: transparent;
             border: none;
@@ -283,7 +281,7 @@
         #resultadoOperacion {
             text-align: right;
             font-size: 14px;
-            color: #4CAF50; /* Verde llamativo */
+            color: #4CAF50;
             font-weight: bold;
             margin-bottom: 15px;
             min-height: 15px;
@@ -332,7 +330,7 @@
             align-items: center;
             border-left: 4px solid #F0B90B;
             transition: all 0.2s;
-            cursor: pointer; /* Cursor de mano */
+            cursor: pointer;
         }
         
         .res-card:hover {
@@ -340,9 +338,18 @@
             transform: translateX(5px);
         }
         
-        .res-card.p2p { border-left-color: #F0B90B; }
+        /* Colores dinámicos para las tarjetas */
+        .res-card.dynamic-p2p { border-left-color: #F0B90B; }
+        .res-card.dynamic-p2p .res-val { color: #F0B90B; }
+        
+        .res-card.dynamic-manual { border-left-color: #64B5F6; }
+        .res-card.dynamic-manual .res-val { color: #64B5F6; }
+
         .res-card.usd { border-left-color: #4CAF50; }
+        .res-card.usd .res-val { color: #4CAF50; }
+
         .res-card.eur { border-left-color: #64B5F6; }
+        .res-card.eur .res-val { color: #64B5F6; }
         
         .res-card small {
             font-size: 12px;
@@ -355,10 +362,6 @@
             font-weight: bold;
             font-size: 18px;
         }
-        
-        .res-card.p2p .res-val { color: #F0B90B; }
-        .res-card.usd .res-val { color: #4CAF50; }
-        .res-card.eur .res-val { color: #64B5F6; }
         
         .res-detail {
             font-size: 10px;
@@ -445,10 +448,7 @@
         </button>
 
         <div class="tasa-selector">
-            <div class="tasa-btn active" id="tasa-bcv" onclick="setTipoTasa('bcv')">
-                🏦 BCV (Oficial)
-            </div>
-            <div class="tasa-btn" id="tasa-paralelo" onclick="setTipoTasa('paralelo')">
+            <div class="tasa-btn active" id="tasa-paralelo" onclick="setTipoTasa('paralelo')">
                 🟡 P2P Binance
             </div>
             <div class="tasa-btn manual" id="tasa-manual" onclick="setTipoTasa('manual')">
@@ -507,14 +507,16 @@
         </div>
 
         <div class="results-section">
-            <!-- Al hacer clic en las tarjetas se copia el valor -->
-            <div class="res-card p2p" onclick="copiarResultado('resultadoP2P')">
+            <!-- Primera tarjeta: Dinámica (Inicia en P2P) -->
+            <div class="res-card dynamic-p2p" id="dynamicCard" onclick="copiarResultado('resultadoDinamico')">
                 <div>
-                    <small>🟡 Binance P2P</small>
-                    <div class="res-detail" id="detalleP2P"></div>
+                    <small id="dynamicLabel">🟡 P2P Binance</small>
+                    <div class="res-detail" id="detalleDinamico"></div>
                 </div>
-                <div class="res-val" id="resultadoP2P">0.00</div>
+                <div class="res-val" id="resultadoDinamico">0.00</div>
             </div>
+
+            <!-- Segunda tarjeta: Siempre USD -->
             <div class="res-card usd" onclick="copiarResultado('resultadoUSD')">
                 <div>
                     <small>🏦 BCV USD (Oficial)</small>
@@ -522,6 +524,8 @@
                 </div>
                 <div class="res-val" id="resultadoUSD">0.00</div>
             </div>
+
+            <!-- Tercera tarjeta: Siempre EUR -->
             <div class="res-card eur" onclick="copiarResultado('resultadoEUR')">
                 <div>
                     <small>🏦 BCV EUR</small>
@@ -538,8 +542,8 @@
 <script>
     // Variables globales
     let tasas = { bcv_usd: 0, bcv_eur: 0, p2p_ves: 0 };
-    let tasasAnteriores = JSON.parse(localStorage.getItem('ultimasTasas')) || null; // Para la tendencia
-    let tipoTasa = 'bcv';
+    let tasasAnteriores = JSON.parse(localStorage.getItem('ultimasTasas')) || null;
+    let tipoTasa = 'paralelo'; // INICIA EN P2P POR DEFECTO
     let tasaManual = 0;
     let modo = 'USD';
 
@@ -551,7 +555,6 @@
         setTimeout(() => toast.remove(), 3000);
     }
 
-    // Copiar resultado al portapapeles
     function copiarResultado(idElemento) {
         const texto = document.getElementById(idElemento).innerText;
         if (texto === 'Bs. 0,00' || texto === '0.00' || texto === '') return;
@@ -563,14 +566,12 @@
         });
     }
 
-    // Limpiar el input
     function limpiarInput() {
         document.getElementById('cantidad').value = '';
         calcular();
         document.getElementById('cantidad').focus();
     }
 
-    // Evaluar operaciones matemáticas
     function evaluarExpresion(expresion) {
         try {
             let limpia = expresion.replace(/[^0-9+\-*/().]/g, '');
@@ -581,7 +582,6 @@
         } catch (error) { return 0; }
     }
 
-    // Actualizar flechas de tendencia
     function actualizarTendencia() {
         const trendDiv = document.getElementById('trendUsd');
         if (tasasAnteriores && tasasAnteriores.bcv_usd > 0 && tasas.bcv_usd > 0) {
@@ -623,14 +623,12 @@
             const response = await fetch('/api/tasas');
             const data = await response.json();
             
-            // Guardar tasas nuevas
             data.forEach(tasa => {
                 if (tasa.tipo === 'bcv_usd') tasas.bcv_usd = tasa.valor;
                 if (tasa.tipo === 'bcv_eur') tasas.bcv_eur = tasa.valor;
                 if (tasa.tipo === 'p2p_ves') tasas.p2p_ves = tasa.valor;
             });
 
-            // Guardar en localStorage para la próxima vez (tendencia)
             if (tasas.bcv_usd > 0) {
                 localStorage.setItem('ultimasTasas', JSON.stringify(tasas));
             }
@@ -684,12 +682,27 @@
         } else {
             manualContainer.classList.remove('active');
         }
+
+        // Actualizar el diseño de la tarjeta dinámica
+        const dynamicCard = document.getElementById('dynamicCard');
+        const dynamicLabel = document.getElementById('dynamicLabel');
+        
+        // Limpiar clases anteriores (excepto 'res-card')
+        dynamicCard.className = 'res-card';
+        
+        if (tipo === 'paralelo') {
+            dynamicCard.classList.add('dynamic-p2p');
+            dynamicLabel.innerHTML = '🟡 P2P Binance';
+        } else if (tipo === 'manual') {
+            dynamicCard.classList.add('dynamic-manual');
+            dynamicLabel.innerHTML = '✏️ Tasa Manual';
+        }
+
         calcular();
     }
 
     function setTasaManual() {
         tasaManual = parseFloat(document.getElementById('tasaManual').value) || 0;
-        // Forzar el modo manual si el usuario escribe una tasa
         if (tasaManual > 0 && tipoTasa !== 'manual') {
             setTipoTasa('manual');
         } else {
@@ -698,10 +711,9 @@
     }
 
     function getTasaActual() {
-        if (tipoTasa === 'bcv') return tasas.bcv_usd;
         if (tipoTasa === 'paralelo') return tasas.p2p_ves;
         if (tipoTasa === 'manual' && tasaManual > 0) return tasaManual;
-        return tasas.bcv_usd;
+        return tasas.p2p_ves; // Fallback
     }
 
     function setModo(nuevoModo) {
@@ -722,13 +734,12 @@
         const expresion = document.getElementById('cantidad').value;
         const resultadoOperacionDiv = document.getElementById('resultadoOperacion');
         
-        // Si está vacío, limpiamos resultados
         if (expresion.trim() === '') {
             resultadoOperacionDiv.innerText = '';
-            document.getElementById('resultadoP2P').innerHTML = 'Bs. 0,00';
+            document.getElementById('resultadoDinamico').innerHTML = 'Bs. 0,00';
             document.getElementById('resultadoUSD').innerHTML = 'Bs. 0,00';
             document.getElementById('resultadoEUR').innerHTML = 'Bs. 0,00';
-            document.getElementById('detalleP2P').innerHTML = 'Ingresa un monto';
+            document.getElementById('detalleDinamico').innerHTML = 'Ingresa un monto';
             document.getElementById('detalleUSD').innerHTML = 'Ingresa un monto';
             document.getElementById('detalleEUR').innerHTML = 'Ingresa un monto';
             return;
@@ -736,39 +747,38 @@
 
         const cantidad = evaluarExpresion(expresion);
         const tasaUSD = getTasaActual();
-        const nombreTasa = tipoTasa === 'bcv' ? 'BCV' : (tipoTasa === 'paralelo' ? 'P2P' : 'Manual');
+        const nombreTasa = tipoTasa === 'paralelo' ? 'P2P' : 'Manual';
         
-        // Mostrar operación matemática
         if (expresion !== cantidad.toString() && expresion !== '') {
             resultadoOperacionDiv.innerText = `= ${cantidad}`;
         } else {
             resultadoOperacionDiv.innerText = '';
         }
 
-        let p2p, usd, eur;
+        let dinamico, usd, eur;
         
         if (modo === 'USD') {
-            p2p = cantidad * tasaUSD;
+            dinamico = cantidad * tasaUSD;
             usd = cantidad * tasas.bcv_usd;
             eur = cantidad * tasas.bcv_eur;
             
-            document.getElementById('detalleP2P').innerHTML = `${cantidad} USD × tasa ${nombreTasa} (${tasaUSD.toFixed(2)})`;
+            document.getElementById('detalleDinamico').innerHTML = `${cantidad} USD × tasa ${nombreTasa} (${tasaUSD.toFixed(2)})`;
             document.getElementById('detalleUSD').innerHTML = `${cantidad} USD × BCV USD (${tasas.bcv_usd.toFixed(2)})`;
             document.getElementById('detalleEUR').innerHTML = `${cantidad} USD × BCV EUR (${tasas.bcv_eur.toFixed(2)})`;
             
-            document.getElementById('resultadoP2P').innerHTML = `Bs. ${p2p.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('resultadoDinamico').innerHTML = `Bs. ${dinamico.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
             document.getElementById('resultadoUSD').innerHTML = `Bs. ${usd.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
             document.getElementById('resultadoEUR').innerHTML = `Bs. ${eur.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
         } else {
-            p2p = cantidad / tasaUSD;
+            dinamico = cantidad / tasaUSD;
             usd = cantidad / tasas.bcv_usd;
             eur = cantidad / tasas.bcv_eur;
             
-            document.getElementById('detalleP2P').innerHTML = `${cantidad} Bs ÷ tasa ${nombreTasa} (${tasaUSD.toFixed(2)})`;
+            document.getElementById('detalleDinamico').innerHTML = `${cantidad} Bs ÷ tasa ${nombreTasa} (${tasaUSD.toFixed(2)})`;
             document.getElementById('detalleUSD').innerHTML = `${cantidad} Bs ÷ BCV USD (${tasas.bcv_usd.toFixed(2)})`;
             document.getElementById('detalleEUR').innerHTML = `${cantidad} Bs ÷ BCV EUR (${tasas.bcv_eur.toFixed(2)})`;
             
-            document.getElementById('resultadoP2P').innerHTML = `${p2p.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD`;
+            document.getElementById('resultadoDinamico').innerHTML = `${dinamico.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD`;
             document.getElementById('resultadoUSD').innerHTML = `${usd.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD`;
             document.getElementById('resultadoEUR').innerHTML = `${eur.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} EUR`;
         }
