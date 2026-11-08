@@ -25,24 +25,24 @@ class ExchangeProvider:
     #"""
     #Obtiene las tasas de USD y EUR del BCV en una sola consulta.
     #"""
-    rates = {"USD": 0.0, "EUR": 0.0}
-    try:
-        # Endpoint unificado: devuelve dólar oficial + euro oficial
-        resp = self.session.get("https://ve.dolarapi.com/v1/cotizaciones", timeout=10)
-        if resp.status_code == 200:
-            data = resp.json()
-            # Recorrer la lista, filtrar por fuente oficial
-            for item in data:
-                if item.get("fuente") == "oficial":
-                    moneda = item.get("moneda")
-                    promedio = float(item.get("promedio", 0.0))
-                    if moneda == "USD":
-                        rates["USD"] = promedio
-                    elif moneda == "EUR":
-                        rates["EUR"] = promedio
-    except Exception as e:
-        print(f"Error obteniendo tasas BCV: {e}")
-    return rates
+        rates = {"USD": 0.0, "EUR": 0.0}
+            try:
+                # Endpoint unificado: devuelve dólar oficial + euro oficial
+                resp = self.session.get("https://ve.dolarapi.com/v1/cotizaciones", timeout=10)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    # Recorrer la lista, filtrar por fuente oficial
+                    for item in data:
+                        if item.get("fuente") == "oficial":
+                            moneda = item.get("moneda")
+                            promedio = float(item.get("promedio", 0.0))
+                            if moneda == "USD":
+                                rates["USD"] = promedio
+                            elif moneda == "EUR":
+                                rates["EUR"] = promedio
+            except Exception as e:
+                print(f"Error obteniendo tasas BCV: {e}")
+            return rates
 
     
     # -----------------------------------------------------------------------------------
