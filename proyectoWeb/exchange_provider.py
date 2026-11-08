@@ -22,9 +22,9 @@ class ExchangeProvider:
         return headers
     #------------------------------------------------------------------------------------
     def get_bcv_rates(self):
-    """
-    Obtiene las tasas de USD y EUR del BCV en una sola consulta.
-    """
+    #"""
+    #Obtiene las tasas de USD y EUR del BCV en una sola consulta.
+    #"""
     rates = {"USD": 0.0, "EUR": 0.0}
     try:
         # Endpoint unificado: devuelve dólar oficial + euro oficial
